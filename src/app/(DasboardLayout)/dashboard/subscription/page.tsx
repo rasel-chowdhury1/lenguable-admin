@@ -655,36 +655,6 @@ export default function ManagePricingPage() {
           </Button>
         </div>
 
-        {/* Stats Strip */}
-        <div className="grid grid-rows-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
-          {[
-            { label: "Total Packages", value: packages.length },
-            {
-              label: "Most Popular",
-              value: packages.find((p) => p.isMostPopular)?.name ?? "—",
-            },
-            {
-              label: "Price Range",
-              value:
-                packages.length > 0
-                  ? `$${Math.min(...packages.map((p) => p.price))} – $${Math.max(...packages.map((p) => p.price))}`
-                  : "—",
-            },
-          ].map((stat) => (
-            <div
-              key={stat.label}
-              className="border border-border rounded-xl px-5 py-4"
-            >
-              <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">
-                {stat.label}
-              </p>
-              <p className="text-xl font-bold text-foreground mt-1">
-                {stat.value}
-              </p>
-            </div>
-          ))}
-        </div>
-
         {/* Package Cards */}
         {packages.length === 0 ? (
           <div className="text-center py-20">

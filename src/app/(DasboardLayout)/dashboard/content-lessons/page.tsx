@@ -19,7 +19,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { courseModules } from "../../../data/courseData";
-import { Trash } from "lucide-react";
+import { Edit, Trash } from "lucide-react";
 import {
   Pagination,
   PaginationContent,
@@ -137,6 +137,10 @@ export default function CourseModulesPage() {
                   ))}
                 </TableCell>
                 <TableCell className="text-end">
+                  {/* Edit */}
+                  <Button variant="ghost" size="icon" className="text-primary">
+                    <Edit className="w-4 h-4" />
+                  </Button>
                   {/* Delete */}
                   <Button
                     variant="ghost"

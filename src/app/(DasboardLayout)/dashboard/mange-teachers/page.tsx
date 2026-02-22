@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, Trash } from "lucide-react";
+import { Edit, Plus, Trash } from "lucide-react";
 import {
   Pagination,
   PaginationContent,
@@ -203,6 +203,9 @@ export default function ManageTeachersPage() {
 
                 {/* Actions */}
                 <TableCell className="text-right">
+                  <Button variant="ghost" size="icon" className="text-primary">
+                    <Edit className="w-4 h-4" />
+                  </Button>
                   <Button
                     variant="ghost"
                     size="icon"
