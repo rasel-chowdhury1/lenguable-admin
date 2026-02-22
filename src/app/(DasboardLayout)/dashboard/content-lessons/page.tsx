@@ -37,6 +37,16 @@ import {
   Trash2,
 } from "lucide-react";
 
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+
 type Resource = { id: number; title: string };
 type Lesson = {
   id: number;
@@ -132,7 +142,7 @@ export default function ContentLessonsPage() {
             setOpen(true);
           }}
         >
-          <Plus className="w-4 h-4 mr-2" />
+          <Plus className="w-4 h-4" />
           Add Lesson
         </Button>
       </div>
@@ -208,6 +218,31 @@ export default function ContentLessonsPage() {
         </CardContent>
       </Card>
 
+      <Pagination>
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious href="#" />
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink href="#">1</PaginationLink>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink href="#" isActive>
+              2
+            </PaginationLink>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink href="#">3</PaginationLink>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationEllipsis />
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationNext href="#" />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
+
       {/* Modal */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-lg">
@@ -222,7 +257,7 @@ export default function ContentLessonsPage() {
             <div>
               <p className="text-sm mb-1">Level</p>
               <Select value={lessonLevel} onValueChange={setLessonLevel}>
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select level" />
                 </SelectTrigger>
                 <SelectContent>

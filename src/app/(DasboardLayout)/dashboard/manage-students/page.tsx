@@ -11,7 +11,17 @@ import {
   TableCell,
   TableHead,
 } from "@/components/ui/table";
-import { Eye, Plus } from "lucide-react";
+import { Eye, Trash } from "lucide-react";
+
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 const students = [
   {
@@ -61,7 +71,7 @@ export default function ManageStudentsPage() {
                   <TableHead>Email</TableHead>
                   <TableHead>Credits</TableHead>
                   <TableHead>Level</TableHead>
-                  <TableHead>Classes Completed</TableHead>
+                  <TableHead>Completed</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -104,16 +114,26 @@ export default function ManageStudentsPage() {
                     <TableCell>{s.completed}</TableCell>
 
                     {/* Actions */}
-                    <TableCell className="text-right space-x-2">
-                      <Button variant="outline" size="sm">
-                        <Eye className="w-4 h-4 mr-2" />
-                        View Details
-                      </Button>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-1">
+                        {/* View */}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-muted-foreground"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </Button>
 
-                      <Button size="sm">
-                        <Plus className="w-4 h-4 mr-2" />
-                        Add Credits
-                      </Button>
+                        {/* Delete */}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-destructive"
+                        >
+                          <Trash className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -122,6 +142,30 @@ export default function ManageStudentsPage() {
           </div>
         </CardContent>
       </Card>
+      <Pagination>
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious href="#" />
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink href="#">1</PaginationLink>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink href="#" isActive>
+              2
+            </PaginationLink>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink href="#">3</PaginationLink>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationEllipsis />
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationNext href="#" />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </div>
   );
 }
