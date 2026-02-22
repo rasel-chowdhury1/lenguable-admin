@@ -9,7 +9,6 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Video, X } from "lucide-react";
 import { format } from "date-fns";
 import {
   Table,
@@ -158,11 +157,6 @@ export default function MyBookingsPage() {
       ? myClasses
       : myClasses.filter((booking) => booking.status === filter);
 
-  const handleCancelClick = (booking: Booking) => {
-    setSelectedBooking(booking);
-    setCancelModalOpen(true);
-  };
-
   const handleConfirmCancel = () => {
     console.log("Class canceled:", selectedBooking);
     setCancelModalOpen(false);
@@ -172,7 +166,7 @@ export default function MyBookingsPage() {
   return (
     <div className="max-w-7xl mx-auto my-10">
       <section className="mb-10">
-        <h2 className="text-xl font-semibold mb-4">My Schedules</h2>
+        <h2 className="text-xl font-semibold mb-4">Teacher Schedules</h2>
 
         {/* Filter Buttons */}
         <div className="flex gap-2 mb-4">
@@ -196,20 +190,20 @@ export default function MyBookingsPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Status</TableHead>
-                <TableHead>Student</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Phone</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Time</TableHead>
-                <TableHead className="text-end">Actions</TableHead>
+                <TableHead className="text-start">Status</TableHead>
+                <TableHead className="text-center">Student</TableHead>
+                <TableHead className="text-center">Email</TableHead>
+                <TableHead className="text-center">Photo</TableHead>
+                <TableHead className="text-center">Phone</TableHead>
+                <TableHead className="text-center">Date</TableHead>
+                <TableHead className="text-end">Time</TableHead>
               </TableRow>
             </TableHeader>
 
             <TableBody>
               {filteredClasses.map((booking) => (
                 <TableRow key={booking.id}>
-                  <TableCell>
+                  <TableCell className="text-start">
                     <Badge
                       variant={
                         booking.status === "Completed"
@@ -223,37 +217,20 @@ export default function MyBookingsPage() {
                     </Badge>
                   </TableCell>
 
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <Avatar>
-                        <AvatarImage src={booking.photo} />
-                        <AvatarFallback>
-                          {booking.name.charAt(0)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <span>{booking.name}</span>
-                    </div>
+                  <TableCell className="text-center">
+                    <Avatar>
+                      <AvatarImage src={booking.photo} />
+                      <AvatarFallback>{booking.name.charAt(0)}</AvatarFallback>
+                    </Avatar>
                   </TableCell>
 
-                  <TableCell>{booking.email}</TableCell>
-                  <TableCell>{booking.phone}</TableCell>
-                  <TableCell>
+                  <TableCell className="text-center">{booking.name}</TableCell>
+                  <TableCell className="text-center">{booking.email}</TableCell>
+                  <TableCell className="text-center">{booking.phone}</TableCell>
+                  <TableCell className="text-center">
                     {format(new Date(booking.date), "MMM dd, yyyy")}
                   </TableCell>
-                  <TableCell>{booking.time}</TableCell>
-
-                  <TableCell className="flex justify-end gap-2">
-                    <Button size="sm">
-                      <Video className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      onClick={() => handleCancelClick(booking)}
-                    >
-                      <X className="w-4 h-4" />
-                    </Button>
-                  </TableCell>
+                  <TableCell className="text-end">{booking.time}</TableCell>
                 </TableRow>
               ))}
 

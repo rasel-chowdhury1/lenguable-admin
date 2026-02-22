@@ -109,7 +109,10 @@ function FeatureList({ features }: { features: string[] }) {
   return (
     <ul className="space-y-2 mt-4">
       {features.map((f, i) => (
-        <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+        <li
+          key={i}
+          className="flex items-start gap-2 text-sm text-muted-foreground"
+        >
           <Check className="w-4 h-4 text-primary mt-0.5 shrink-0" />
           <span>{f}</span>
         </li>
@@ -418,7 +421,11 @@ function DeleteModal({
           <Button variant="outline" className="flex-1" onClick={onClose}>
             Cancel
           </Button>
-          <Button variant="destructive" className="flex-1 gap-1.5" onClick={onConfirm}>
+          <Button
+            variant="destructive"
+            className="flex-1 gap-1.5"
+            onClick={onConfirm}
+          >
             <Trash2 className="w-4 h-4" />
             Delete Package
           </Button>
@@ -478,7 +485,9 @@ function AddModal({
               <Label>Validity</Label>
               <Input
                 value={newPkg.validity}
-                onChange={(e) => setNewPkg({ ...newPkg, validity: e.target.value })}
+                onChange={(e) =>
+                  setNewPkg({ ...newPkg, validity: e.target.value })
+                }
                 placeholder="e.g. Valid for 3 months"
               />
             </div>
@@ -529,7 +538,9 @@ function AddModal({
           <div className="flex items-center gap-3">
             <Switch
               checked={newPkg.isMostPopular}
-              onCheckedChange={(v) => setNewPkg({ ...newPkg, isMostPopular: v })}
+              onCheckedChange={(v) =>
+                setNewPkg({ ...newPkg, isMostPopular: v })
+              }
             />
             <Label className="cursor-pointer">Mark as Most Popular</Label>
           </div>
@@ -620,8 +631,8 @@ export default function ManagePricingPage() {
   };
 
   return (
-    <main className="min-h-screen font-sans">
-      <div className="max-w-5xl mx-auto px-6 py-12">
+    <div>
+      <div className="max-w-7xl mx-auto my-10">
         {/* Header */}
         <div className="flex items-start justify-between mb-10">
           <div>
@@ -645,7 +656,7 @@ export default function ManagePricingPage() {
         </div>
 
         {/* Stats Strip */}
-        <div className="grid grid-cols-3 gap-4 mb-10">
+        <div className="grid grid-rows-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
           {[
             { label: "Total Packages", value: packages.length },
             {
@@ -718,6 +729,6 @@ export default function ManagePricingPage() {
         onClose={() => setAddOpen(false)}
         onSave={saveAdd}
       />
-    </main>
+    </div>
   );
 }
