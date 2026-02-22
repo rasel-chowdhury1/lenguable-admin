@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -84,7 +81,7 @@ export default function DashboardPage() {
         </Select>
       </div>
 
-      {/* Stats */}
+      {/* Stats1 */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((item, i) => {
           const Icon = item.icon;
@@ -92,9 +89,7 @@ export default function DashboardPage() {
             <Card key={i}>
               <CardContent className="p-5 flex justify-between items-center">
                 <div>
-                  <p className="text-sm text-muted-foreground">
-                    {item.title}
-                  </p>
+                  <p className="text-sm text-muted-foreground">{item.title}</p>
                   <p className="text-xl font-semibold">{item.value}</p>
                 </div>
                 <Icon className="w-6 h-6 text-primary" />
@@ -102,6 +97,31 @@ export default function DashboardPage() {
             </Card>
           );
         })}
+      </div>
+
+      {/* States 2 */}
+      <div className="grid lg:grid-cols-2 gap-4">
+        <Card className="bg-green-50 border-green-200">
+          <CardContent className="p-6 flex justify-between items-center">
+            <div>
+              <p className="text-sm text-muted-foreground">
+                Total Paid to Teachers
+              </p>
+              <p className="text-2xl font-semibold">$1950</p>
+            </div>
+            <TrendingUp className="w-7 h-7 text-green-600" />
+          </CardContent>
+        </Card>
+
+        <Card className="bg-blue-50 border-blue-200">
+          <CardContent className="p-6 flex justify-between items-center">
+            <div>
+              <p className="text-sm text-muted-foreground">Total Net Income</p>
+              <p className="text-2xl font-semibold">$1950</p>
+            </div>
+            <DollarSign className="w-7 h-7 text-blue-600" />
+          </CardContent>
+        </Card>
       </div>
 
       {/* Weekly Financials */}
@@ -140,33 +160,6 @@ export default function DashboardPage() {
           </div>
         </CardContent>
       </Card>
-
-      {/* Bottom cards */}
-      <div className="grid lg:grid-cols-2 gap-4">
-        <Card className="bg-green-50 border-green-200">
-          <CardContent className="p-6 flex justify-between items-center">
-            <div>
-              <p className="text-sm text-muted-foreground">
-                Total Paid to Teachers
-              </p>
-              <p className="text-2xl font-semibold">$1950</p>
-            </div>
-            <TrendingUp className="w-7 h-7 text-green-600" />
-          </CardContent>
-        </Card>
-
-        <Card className="bg-blue-50 border-blue-200">
-          <CardContent className="p-6 flex justify-between items-center">
-            <div>
-              <p className="text-sm text-muted-foreground">
-                Total Net Income
-              </p>
-              <p className="text-2xl font-semibold">$1950</p>
-            </div>
-            <DollarSign className="w-7 h-7 text-blue-600" />
-          </CardContent>
-        </Card>
-      </div>
     </div>
   );
 }
