@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
