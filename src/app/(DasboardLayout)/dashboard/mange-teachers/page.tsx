@@ -234,7 +234,7 @@ export default function TeacherManagement() {
   const [addOpen, setAddOpen] = useState<boolean>(false);
 
   return (
-    <div className="max-w-6xl mx-auto P-5 my-10">
+    <div className="max-w-6xl mx-auto p-5 my-10">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Teacher Management</h1>
