@@ -1,27 +1,27 @@
-"use client"
-import { type LucideIcon } from "lucide-react"
+"use client";
+import { type LucideIcon } from "lucide-react";
 import {
   SidebarGroup,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
+} from "@/components/ui/sidebar";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export function NavItems({
   items,
 }: {
   items: {
-    title: string
-    url: string
-    icon?: LucideIcon
-    isActive?: boolean
+    title: string;
+    url: string;
+    icon?: LucideIcon;
+    isActive?: boolean;
     items?: {
-      title: string
-      url: string
-    }[]
-  }[]
+      title: string;
+      url: string;
+    }[];
+  }[];
 }) {
   const pathname = usePathname();
   return (
@@ -35,10 +35,9 @@ export function NavItems({
               <SidebarMenuButton
                 asChild
                 tooltip={item.title}
-                className={`flex items-center gap-2 ${active
-                  ? "bg-primary text-white hover:bg-primary hover:text-white"
-                  : "hover:text-primary"
-                  }`}
+                className={`flex items-center gap-2 ${
+                  active ? "bg-[#A9F877] hover:bg-[#C1FF72]" : ""
+                }`}
               >
                 <Link href={item.url}>
                   {item.icon && <item.icon />}
@@ -50,5 +49,5 @@ export function NavItems({
         })}
       </SidebarMenu>
     </SidebarGroup>
-  )
+  );
 }

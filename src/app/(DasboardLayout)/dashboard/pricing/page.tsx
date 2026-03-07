@@ -1,15 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Plus,
-  Pencil,
-  Trash2,
-  Check,
-  X,
-  Sparkles,
-  TrendingUp,
-} from "lucide-react";
+import { Plus, Pencil, Trash2, Check, X, Sparkles } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -113,7 +105,7 @@ function FeatureList({ features }: { features: string[] }) {
           key={i}
           className="flex items-start gap-2 text-sm text-muted-foreground"
         >
-          <Check className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+          <Check className="w-4 h-4 text-[#A9F877] mt-0.5 shrink-0" />
           <span>{f}</span>
         </li>
       ))}
@@ -132,12 +124,12 @@ function PackageCard({
 }) {
   return (
     <div
-      className={`relative flex flex-col rounded-2xl border overflow-hidden transition-colors duration-200
-        ${pkg.isMostPopular ? "border-primary ring-1 ring-primary" : "border-border"}`}
+      className={`relative flex flex-col rounded-xl border overflow-hidden transition-colors duration-200
+        ${pkg.isMostPopular ? "border-[#A9F877]" : "border-border"}`}
     >
       {pkg.isMostPopular && (
         <div className="absolute top-0 right-0">
-          <div className="bg-primary text-primary-foreground text-xs font-semibold px-3 py-1 rounded-bl-xl flex items-center gap-1">
+          <div className="bg-[#A9F877] text-white text-xs font-semibold px-3 py-1 rounded-bl-xl flex items-center gap-1">
             <Sparkles className="w-3 h-3" />
             Most Popular
           </div>
@@ -161,7 +153,7 @@ function PackageCard({
               </span>
             )}
           </div>
-          <p className="text-sm font-semibold text-primary mt-1">
+          <p className="text-sm font-semibold text-[#A9F877] mt-1">
             {pkg.credits} Credit{pkg.credits > 1 ? "s" : ""}
           </p>
         </div>
@@ -410,7 +402,7 @@ function DeleteModal({
             </div>
             <div className="text-right">
               <p className="text-xl font-bold text-foreground">${pkg.price}</p>
-              <p className="text-xs text-primary font-medium">
+              <p className="text-xs text-[#A9F877] font-medium">
                 {pkg.credits} Credits
               </p>
             </div>
@@ -632,16 +624,10 @@ export default function ManagePricingPage() {
 
   return (
     <div>
-      <div className="max-w-7xl mx-auto my-10">
+      <div className="max-w-6xl mx-auto p-5 my-10">
         {/* Header */}
         <div className="flex items-start justify-between mb-10">
           <div>
-            <div className="flex items-center gap-2 mb-1">
-              <TrendingUp className="w-4 h-4 text-muted-foreground" />
-              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">
-                Pricing
-              </span>
-            </div>
             <h1 className="text-3xl font-bold text-foreground tracking-tight">
               Manage Pricing Packages
             </h1>
@@ -649,7 +635,7 @@ export default function ManagePricingPage() {
               Edit existing packages or create new ones
             </p>
           </div>
-          <Button onClick={() => setAddOpen(true)} className="gap-2">
+          <Button onClick={() => setAddOpen(true)} className="gap-2 bg-[#A9F877] hover:bg-[#C1FF72] text-black">
             <Plus className="w-4 h-4" />
             Add New Package
           </Button>
@@ -658,7 +644,7 @@ export default function ManagePricingPage() {
         {/* Package Cards */}
         {packages.length === 0 ? (
           <div className="text-center py-20">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl border border-border flex items-center justify-center">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-lg border border-border flex items-center justify-center">
               <Sparkles className="w-8 h-8 text-muted-foreground/40" />
             </div>
             <p className="font-semibold text-foreground">No packages yet</p>

@@ -98,7 +98,11 @@ export default function LoginPage() {
         </CardContent>
 
         <CardFooter className="flex gap-2">
-          <Button type="submit" form="login-form" className="w-full">
+          <Button
+            type="submit"
+            form="login-form"
+            className="w-full bg-[#A9F877] hover:bg-[#C1FF72] text-black"
+          >
             Login
           </Button>
         </CardFooter>

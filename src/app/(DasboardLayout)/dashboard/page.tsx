@@ -1,84 +1,17 @@
 "use client";
-
-import { Card, CardContent } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { useState } from "react";
 import {
   DollarSign,
   Users,
   GraduationCap,
   BookOpen,
   TrendingUp,
+  ChevronDown,
 } from "lucide-react";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
 
-export default function DashboardPage() {
-  const stats = [
-    {
-      title: "Total Revenue",
-      value: "$3900",
-      icon: DollarSign,
-      bg: "bg-blue-50",
-      border: "border-blue-200",
-      iconColor: "text-blue-600",
-    },
-    {
-      title: "Active Students",
-      value: "127",
-      icon: Users,
-      bg: "bg-purple-50",
-      border: "border-purple-200",
-      iconColor: "text-purple-600",
-    },
-    {
-      title: "Active Teachers",
-      value: "15",
-      icon: GraduationCap,
-      bg: "bg-yellow-50",
-      border: "border-yellow-200",
-      iconColor: "text-yellow-600",
-    },
-    {
-      title: "Classes This Week",
-      value: "45",
-      icon: BookOpen,
-      bg: "bg-pink-50",
-      border: "border-pink-200",
-      iconColor: "text-pink-600",
-    },
-  ];
-
-  const highlights = [
-    {
-      title: "Total Paid to Teachers",
-      value: "$1950",
-      icon: TrendingUp,
-      bg: "bg-green-50",
-      border: "border-green-200",
-      iconColor: "text-green-600",
-    },
-    {
-      title: "Total Net Income",
-      value: "$1950",
-      icon: DollarSign,
-      bg: "bg-blue-50",
-      border: "border-blue-200",
-      iconColor: "text-blue-600",
-    },
-  ];
+export default function Dashboard() {
+  const [period, setPeriod] = useState("Weekly");
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const weekly = [
     {
@@ -111,81 +44,153 @@ export default function DashboardPage() {
     },
   ];
 
+  const stats = [
+    {
+      title: "Total Revenue",
+      value: "$3900",
+      Icon: DollarSign,
+      iconColor: "text-green-600",
+    },
+    {
+      title: "Active Students",
+      value: "127",
+      Icon: Users,
+      iconColor: "text-blue-600",
+    },
+    {
+      title: "Active Teachers",
+      value: "15",
+      Icon: GraduationCap,
+      iconColor: "text-purple-600",
+    },
+    {
+      title: "Classes This Week",
+      value: "45",
+      Icon: BookOpen,
+      iconColor: "text-orange-600",
+    },
+  ];
+
   return (
-    <div className="max-w-7xl mx-auto my-10">
+    <div className="max-w-6xl mx-auto p-5 my-10">
       {/* Header */}
-      <div className="flex items-center justify-between mb-5">
-        <h1 className="text-2xl font-semibold">Overview</h1>
-        <Select defaultValue="weekly">
-          <SelectTrigger className="w-36">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="weekly">Weekly</SelectItem>
-            <SelectItem value="monthly">Monthly</SelectItem>
-            <SelectItem value="yearly">Yearly</SelectItem>
-          </SelectContent>
-        </Select>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">Overview</h1>
+        <div className="relative">
+          <button
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+            className="flex items-center gap-2 border border-gray-300 rounded-lg px-4 py-2 bg-white text-sm text-gray-700 font-medium cursor-pointer hover:bg-gray-50"
+          >
+            {period} <ChevronDown size={16} />
+          </button>
+          {dropdownOpen && (
+            <div className="absolute right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 w-32 overflow-hidden">
+              {["Weekly", "Monthly", "Yearly"].map((opt) => (
+                <div
+                  key={opt}
+                  onClick={() => {
+                    setPeriod(opt);
+                    setDropdownOpen(false);
+                  }}
+                  className={`px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 ${opt === period ? "text-blue-600 bg-blue-50" : "text-gray-700"}`}
+                >
+                  {opt}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-5">
-        {stats.map((item, i) => {
-          const Icon = item.icon;
-          return (
-            <Card key={i} className={`${item.bg} border ${item.border}`}>
-              <CardContent className="p-5 flex justify-between items-center">
-                <div>
-                  <p className="text-sm text-muted-foreground">{item.title}</p>
-                  <p className="text-xl font-semibold">{item.value}</p>
-                </div>
-                <Icon className={`w-6 h-6 ${item.iconColor}`} />
-              </CardContent>
-            </Card>
-          );
-        })}
+      <div className="grid grid-cols-4 gap-4 mb-4">
+        {stats.map(({ title, value, Icon, iconColor }) => (
+          <div
+            key={title}
+            className="bg-white border border-gray-200 rounded-xl p-5 flex items-center justify-between"
+          >
+            <div>
+              <p className="text-sm text-gray-500 mb-1">{title}</p>
+              <p className="text-2xl font-bold text-gray-900">{value}</p>
+            </div>
+            <Icon className={`${iconColor} w-7 h-7`} />
+          </div>
+        ))}
       </div>
 
-      {/* Highlight Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-5 mb-5">
-        {highlights.map((item, i) => {
-          const Icon = item.icon;
-          return (
-            <Card key={i} className={`${item.bg} border ${item.border}`}>
-              <CardContent className="p-6 flex justify-between items-center">
-                <div>
-                  <p className="text-sm text-muted-foreground">{item.title}</p>
-                  <p className="text-2xl font-semibold">{item.value}</p>
-                </div>
-                <Icon className={`w-7 h-7 ${item.iconColor}`} />
-              </CardContent>
-            </Card>
-          );
-        })}
+      {/* Weekly Financials Table */}
+      <div className="bg-white border border-gray-200 rounded-xl p-6 mb-4">
+        <h2 className="text-base font-semibold text-gray-900 mb-5">
+          Weekly Financials
+        </h2>
+        <table className="w-full">
+          <thead>
+            <tr className="border-b border-gray-200">
+              <th className="text-left text-sm font-medium text-gray-500 pb-3 pr-4">
+                Week Of
+              </th>
+              <th className="text-left text-sm font-medium text-gray-500 pb-3 pr-4">
+                Classes Booked
+              </th>
+              <th className="text-left text-sm font-medium text-gray-500 pb-3 pr-4">
+                Revenue
+              </th>
+              <th className="text-left text-sm font-medium text-gray-500 pb-3 pr-4">
+                Teacher Payouts
+              </th>
+              <th className="text-left text-sm font-medium text-gray-500 pb-3">
+                Net Income
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {weekly.map((row, i) => (
+              <tr
+                key={i}
+                className={
+                  i < weekly.length - 1 ? "border-b border-gray-200" : ""
+                }
+              >
+                <td className="py-4 text-sm text-gray-700 pr-4">{row.week}</td>
+                <td className="py-4 text-sm text-gray-700 pr-4">
+                  {row.classes}
+                </td>
+                <td className="py-4 text-sm font-semibold text-green-600 pr-4">
+                  ${row.revenue.toLocaleString()}
+                </td>
+                <td className="py-4 text-sm font-semibold text-red-500 pr-4">
+                  ${row.payouts}
+                </td>
+                <td className="py-4 text-sm font-bold text-gray-900">
+                  ${row.net}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
-      {/* Weekly Financial Graph */}
-      <Card>
-        {" "}
-        <CardContent className="p-5">
-          {" "}
-          <h2 className="font-semibold mb-4">Weekly Financials</h2>{" "}
-          <ResponsiveContainer width="100%" height={300}>
-            {" "}
-            <BarChart
-              data={weekly}
-              margin={{ top: 20, right: 30, left: 0, bottom: 0 }}
-            >
-              {" "}
-              <XAxis dataKey="week" tick={{ fontSize: 12 }} /> <YAxis />{" "}
-              <Tooltip /> <Legend />{" "}
-              <Bar dataKey="revenue" fill="#3b82f6" name="Revenue" />{" "}
-              <Bar dataKey="payouts" fill="#ef4444" name="Teacher Payouts" />{" "}
-              <Bar dataKey="net" fill="#10b981" name="Net Income" />{" "}
-            </BarChart>{" "}
-          </ResponsiveContainer>{" "}
-        </CardContent>{" "}
-      </Card>
+      {/* Bottom Highlight Cards */}
+      <div className="grid grid-cols-2 gap-4">
+        <div className="bg-green-50 border border-green-200 rounded-xl p-6 flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-green-600 mb-1">
+              Total Paid to Teachers
+            </p>
+            <p className="text-3xl font-bold text-green-700">$1950</p>
+          </div>
+          <TrendingUp className="text-green-600 w-8 h-8" />
+        </div>
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-blue-600 mb-1">
+              Total Net Income
+            </p>
+            <p className="text-3xl font-bold text-blue-700">$1950</p>
+          </div>
+          <DollarSign className="text-blue-600 w-8 h-8" />
+        </div>
+      </div>
     </div>
   );
 }

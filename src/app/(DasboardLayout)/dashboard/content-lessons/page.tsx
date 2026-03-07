@@ -1,16 +1,19 @@
 "use client";
-
 import { useState } from "react";
-import { useForm, useFieldArray } from "react-hook-form";
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableRow,
-  TableCell,
-  TableHead,
-} from "@/components/ui/table";
+import { useForm } from "react-hook-form";
+import { Plus, FileText, SquarePen } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -18,278 +21,281 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { courseModules } from "../../../data/courseData";
-import { Edit, Trash } from "lucide-react";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
 
-// --- Types ---
-interface Lesson {
-  id: string;
+// ── Types ─────────────────────────────────────────────────────────────────────
+type Lesson = {
   title: string;
-  videoId: string;
-  description?: string;
-}
+  level: string;
+};
 
-interface Reference {
+type Resource = {
   title: string;
-  url: string;
-}
+  type: string;
+};
 
-interface Module {
-  id: number;
+type LessonFormData = {
+  level: string;
   title: string;
-  description?: string;
-  references?: Reference[];
-  lessons: Lesson[];
-}
+  content: string;
+  exercises: string;
+};
 
-// --- Page Component ---
-export default function CourseModulesPage() {
-  const [modules, setModules] = useState<Module[]>(courseModules);
-  const [open, setOpen] = useState(false);
+type ResourceFormData = {
+  title: string;
+  type: string;
+};
 
-  const { register, handleSubmit, control, reset } = useForm<Module>({
-    defaultValues: {
-      lessons: [{ title: "", videoId: "" }],
-      references: [{ title: "", url: "" }],
-    },
-  });
+// ── Initial Data ──────────────────────────────────────────────────────────────
+const initialLessons: Lesson[] = [
+  { title: "Greetings and Introductions", level: "A0" },
+  { title: "Numbers and Colors", level: "A0" },
+  { title: "Present Simple", level: "A1" },
+  { title: "Daily Routines", level: "A1" },
+];
 
-  const {
-    fields: lessonFields,
-    append: appendLesson,
-    remove: removeLesson,
-  } = useFieldArray({
-    control,
-    name: "lessons",
-  });
+const initialResources: Resource[] = [
+  { title: "Grammar Reference Guide", type: "PDF" },
+  { title: "Vocabulary Lists", type: "Document" },
+  { title: "Pronunciation Videos", type: "Video" },
+];
 
-  const {
-    fields: referenceFields,
-    append: appendReference,
-    remove: removeReference,
-  } = useFieldArray({
-    control,
-    name: "references",
-  });
+// ── Add Lesson Modal ──────────────────────────────────────────────────────────
+function AddLessonModal({
+  open,
+  onClose,
+}: {
+  open: boolean;
+  onClose: () => void;
+}) {
+  const { register, handleSubmit, reset, setValue } = useForm<LessonFormData>();
 
-  const onSubmit = (data: Module) => {
-    const newModule: Module = {
-      ...data,
-      id: Number(data.id),
-    };
-
-    setModules([...modules, newModule]);
-    setOpen(false);
+  function onSubmit(data: LessonFormData): void {
+    console.log("New lesson:", data);
     reset();
-    // You can also POST newModule to your API here
-  };
+    onClose();
+  }
 
   return (
-    <div className="max-w-7xl mx-auto my-10">
-      <div className="flex justify-between items-center mb-5">
-        <h2 className="text-2xl font-bold">Course Modules</h2>
-        <Button onClick={() => setOpen(true)}>Add Module</Button>
-      </div>
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-md rounded-lg">
+        <DialogHeader>
+          <DialogTitle className="text-base font-semibold">Add New Lesson</DialogTitle>
+        </DialogHeader>
+        <p className="text-sm text-gray-500 -mt-3 mb-1">Create a new lesson for students</p>
 
-      {/* --- Table --- */}
-      <div className="border rounded-md overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Title</TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead>Lessons</TableHead>
-              <TableHead>References</TableHead>
-              <TableHead className="text-end">Action</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {modules.slice(0, 5).map((module) => (
-              <TableRow key={module.id}>
-                <TableCell>{module.title.slice(0, 20)}</TableCell>
-                <TableCell>{module.description?.slice(0, 20)}</TableCell>
-                <TableCell>
-                  {module.lessons.map((lesson) => (
-                    <div key={lesson.id}>{lesson.title}</div>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {/* Level + Title side by side */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label className="mb-1 block text-sm font-medium">Level</Label>
+              <Select onValueChange={(val) => setValue("level", val)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select Level" />
+                </SelectTrigger>
+                <SelectContent>
+                  {["A0", "A1", "A2", "B1", "B2", "C1", "C2"].map((l) => (
+                    <SelectItem key={l} value={l}>{l}</SelectItem>
                   ))}
-                </TableCell>
-                <TableCell>
-                  {module.references?.map((ref, idx) => (
-                    <div key={idx}>
-                      <a
-                        href={ref.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-blue-600 underline"
-                      >
-                        {ref.title}
-                      </a>
-                    </div>
-                  ))}
-                </TableCell>
-                <TableCell className="text-end">
-                  {/* Edit */}
-                  <Button variant="ghost" size="icon" className="text-primary">
-                    <Edit className="w-4 h-4" />
-                  </Button>
-                  {/* Delete */}
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-destructive"
-                  >
-                    <Trash className="w-4 h-4" />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-
-      <Pagination className="mt-5">
-        <PaginationContent>
-          <PaginationItem>
-            <PaginationPrevious href="#" />
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationLink href="#">1</PaginationLink>
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationLink href="#" isActive>
-              2
-            </PaginationLink>
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationLink href="#">3</PaginationLink>
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationEllipsis />
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationNext href="#" />
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
-
-      {/* --- Modal --- */}
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-4xl">
-          <DialogHeader>
-            <DialogTitle>Add New Module</DialogTitle>
-          </DialogHeader>
-
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            {/* Module ID & Title */}
-            <div className="flex gap-2">
-              <input
-                type="number"
-                placeholder="Module ID"
-                {...register("id", { required: true })}
-                className="border p-2 rounded w-1/3"
-              />
-              <input
-                placeholder="Module Title"
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="mb-1 block text-sm font-medium">Title</Label>
+              <Input
                 {...register("title", { required: true })}
-                className="border p-2 rounded w-2/3"
+                placeholder="e.g., Present Simple"
               />
             </div>
+          </div>
 
-            {/* Module Description */}
-            <textarea
-              placeholder="Module Description"
-              {...register("description")}
-              className="border p-2 rounded w-full"
+          <div>
+            <Label className="mb-1 block text-sm font-medium">Lesson Content</Label>
+            <Textarea
+              {...register("content")}
+              placeholder="Enter lesson content..."
+              className="resize-none"
             />
+          </div>
 
-            {/* Lessons */}
-            <div className="border p-2 rounded space-y-2">
-              <h3 className="font-semibold">Lessons</h3>
-              {lessonFields.map((field, index) => (
-                <div key={field.id} className="flex gap-2 items-center">
-                  <input
-                    placeholder="Lesson Title"
-                    {...register(`lessons.${index}.title` as const)}
-                    className="border p-2 rounded w-full"
-                  />
-                  <input
-                    placeholder="URL"
-                    {...register(`lessons.${index}.videoId` as const)}
-                    className="border p-2 rounded w-full"
-                  />
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    onClick={() => removeLesson(index)}
-                  >
-                    Remove
-                  </Button>
-                </div>
-              ))}
+          <div>
+            <Label className="mb-1 block text-sm font-medium">Practice Exercises</Label>
+            <Textarea
+              {...register("exercises")}
+              placeholder="Enter practice exercises..."
+              className="resize-none"
+            />
+          </div>
+
+          <DialogFooter className="pt-1">
+            <Button type="button" variant="outline" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              className="bg-[#A9F877] hover:bg-[#C1FF72] text-black"
+            >
+              Create Lesson
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// ── Add Resource Modal ────────────────────────────────────────────────────────
+function AddResourceModal({
+  open,
+  onClose,
+}: {
+  open: boolean;
+  onClose: () => void;
+}) {
+  const { register, handleSubmit, reset, setValue } = useForm<ResourceFormData>();
+
+  function onSubmit(data: ResourceFormData): void {
+    console.log("New resource:", data);
+    reset();
+    onClose();
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-md rounded-lg">
+        <DialogHeader>
+          <DialogTitle className="text-base font-semibold">Add Resource</DialogTitle>
+        </DialogHeader>
+        <p className="text-sm text-gray-500 -mt-3 mb-1">Add a new learning resource</p>
+
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <div>
+            <Label className="mb-1 block text-sm font-medium">Title</Label>
+            <Input
+              {...register("title", { required: true })}
+              placeholder="Resource title"
+            />
+          </div>
+
+          <div>
+            <Label className="mb-1 block text-sm font-medium">Type</Label>
+            <Select onValueChange={(val) => setValue("type", val)}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select type" />
+              </SelectTrigger>
+              <SelectContent>
+                {["PDF", "Document", "Video", "Audio", "Link"].map((t) => (
+                  <SelectItem key={t} value={t}>{t}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <DialogFooter className="pt-1">
+            <Button type="button" variant="outline" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              className="bg-[#A9F877] hover:bg-[#C1FF72] text-black"
+            >
+              Create Lesson
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// ── Main Page ─────────────────────────────────────────────────────────────────
+export default function CoursePage() {
+  const [lessons] = useState<Lesson[]>(initialLessons);
+  const [resources] = useState<Resource[]>(initialResources);
+  const [lessonOpen, setLessonOpen] = useState<boolean>(false);
+  const [resourceOpen, setResourceOpen] = useState<boolean>(false);
+
+  return (
+    <div className="max-w-6xl mx-auto p-5 my-10">
+
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">Title</h1>
+        <div className="flex items-center gap-3">
+          <Button
+            onClick={() => setLessonOpen(true)}
+            className="bg-[#A9F877] hover:bg-[#C1FF72] text-black"
+          >
+            <Plus size={15} /> Add Lesson
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => setResourceOpen(true)}
+            className="gap-2 text-gray-700 font-medium"
+          >
+            <Plus size={15} /> Add Resource
+          </Button>
+        </div>
+      </div>
+
+      {/* Lessons Section */}
+      <div className="border border-gray-200 rounded-lg bg-white mb-5">
+        <p className="text-sm text-gray-500 font-medium px-5 pt-4 pb-3">Lessons</p>
+        <div className="px-3 pb-3 space-y-2">
+          {lessons.map((lesson, i) => (
+            <div
+              key={i}
+              className="flex items-center justify-between border border-gray-200 rounded-lg px-4 py-3 hover:bg-gray-50/60 transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                <FileText size={16} className="text-blue-500 shrink-0" />
+                <span className="text-sm font-semibold text-gray-900">
+                  {lesson.title}{" "}
+                  <span className="text-gray-400 font-normal">({lesson.level})</span>
+                </span>
+              </div>
               <Button
-                type="button"
-                onClick={() =>
-                  appendLesson({
-                    id: "",
-                    title: "",
-                    videoId: "",
-                  })
-                }
+                variant="ghost"
+                size="sm"
+                className="gap-1.5 text-sm text-gray-600 hover:text-gray-900 font-medium"
               >
-                Add Lesson
+                <SquarePen size={14} /> Edit
               </Button>
             </div>
+          ))}
+        </div>
+      </div>
 
-            {/* References */}
-            <div className="border p-2 rounded space-y-2">
-              <h3 className="font-semibold">References</h3>
-              {referenceFields.map((field, index) => (
-                <div key={field.id} className="flex gap-2 items-center">
-                  <input
-                    placeholder="Reference Title"
-                    {...register(`references.${index}.title` as const)}
-                    className="border p-2 rounded w-1/2"
-                  />
-                  <input
-                    placeholder="URL"
-                    {...register(`references.${index}.url` as const)}
-                    className="border p-2 rounded w-1/2"
-                  />
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    onClick={() => removeReference(index)}
-                  >
-                    Remove
-                  </Button>
-                </div>
-              ))}
+      {/* Additional Resources Section */}
+      <div className="border border-gray-200 rounded-lg bg-white">
+        <p className="text-sm text-gray-500 font-medium px-5 pt-4 pb-3">Additional Resources</p>
+        <div className="px-3 pb-3 space-y-2">
+          {resources.map((res, i) => (
+            <div
+              key={i}
+              className="flex items-center justify-between border border-gray-200 rounded-lg px-4 py-3 hover:bg-gray-50/60 transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                <FileText size={16} className="text-green-500 shrink-0" />
+                <span className="text-sm font-semibold text-gray-900">
+                  {res.title}{" "}
+                  <span className="text-gray-400 font-normal">({res.type})</span>
+                </span>
+              </div>
               <Button
-                type="button"
-                onClick={() => appendReference({ title: "", url: "" })}
+                variant="ghost"
+                size="sm"
+                className="gap-1.5 text-sm text-gray-600 hover:text-gray-900 font-medium"
               >
-                Add Reference
+                <SquarePen size={14} /> Edit
               </Button>
             </div>
+          ))}
+        </div>
+      </div>
 
-            <DialogFooter className="flex gap-2 justify-end">
-              <Button variant="outline" onClick={() => setOpen(false)}>
-                Cancel
-              </Button>
-              <Button type="submit">Save Module</Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
+      {/* Modals */}
+      <AddLessonModal open={lessonOpen} onClose={() => setLessonOpen(false)} />
+      <AddResourceModal open={resourceOpen} onClose={() => setResourceOpen(false)} />
     </div>
   );
 }

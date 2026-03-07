@@ -29,24 +29,31 @@ const AppHeader = () => {
           {/* LANGUAGE DROPDOWN */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2 bg-sidebar border-none hover:bg-sidebar"
+              >
                 <Globe className="h-4 w-4" />
-                {language === "en" ? "English" : "Spanish"}
+                {language === "en" ? "EN" : "ES"}
               </Button>
             </DropdownMenuTrigger>
 
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => setLanguage("en")}>
-                English
+                EN
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setLanguage("es")}>
-                Spanish
+                ES
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
           {/* LOGIN BUTTON */}
-          <Button size="sm" className="gap-2">
+          <Button
+            size="sm"
+            className="gap-2 bg-sidebar text-black hover:bg-sidebar"
+          >
             <LogOut className="h-4 w-4" />
             Login
           </Button>

@@ -1,13 +1,15 @@
 "use client";
 
 import {
-  LayoutDashboard,
+  // LayoutDashboard,
   Settings,
   GraduationCap,
   Users,
-  CalendarClock,
+  // CalendarClock,
   BookOpen,
-  List,
+  // List,
+  DollarSign,
+  Package,
 } from "lucide-react";
 
 import { NavItems } from "@/components/nav-items";
@@ -30,34 +32,34 @@ const user = {
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   const navItems = [
     {
-      title: "Dashboard",
+      title: "Overview",
       url: "/dashboard",
-      icon: LayoutDashboard,
+      icon: DollarSign,
     },
     {
       title: "Manage Teachers",
       url: "/dashboard/mange-teachers",
       icon: Users,
     },
-    {
-      title: "Teacher Schedules",
-      url: "/dashboard/teacher-schedules",
-      icon: CalendarClock,
-    },
+    // {
+    //   title: "Teacher Schedules",
+    //   url: "/dashboard/teacher-schedules",
+    //   icon: CalendarClock,
+    // },
     {
       title: "Manage Students",
       url: "/dashboard/manage-students",
       icon: GraduationCap,
     },
     {
+      title: "Pricing Packages",
+      url: "/dashboard/pricing",
+      icon: Package,
+    },
+    {
       title: "Content & Lessons",
       url: "/dashboard/content-lessons",
       icon: BookOpen,
-    },
-    {
-      title: "Subscription",
-      url: "/dashboard/subscription",
-      icon: List,
     },
     {
       title: "Settings",
