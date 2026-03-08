@@ -1,8 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm } from "react-hook-form";
-import { toast } from "sonner";
-import * as z from "zod";
+import { Controller, FieldValues, useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -19,31 +18,32 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { useLoginMutation } from "@/redux/features/authApi";
+import { toast } from "sonner";
 
-/* ✅ Schema */
-const formSchema = z.object({
-  email: z.string().email("Enter a valid email"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-});
+const LoginPage = () => {
+  const router = useRouter();
+  const [login, { isLoading }] = useLoginMutation();
 
-export default function LoginPage() {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<FieldValues>({
     defaultValues: {
-      email: "",
-      password: "",
+      email: "admin@gmail.com",
+      password: "admin@123",
     },
   });
 
-  function onSubmit(data: z.infer<typeof formSchema>) {
-    toast("Login Data", {
-      description: JSON.stringify(data, null, 2),
-    });
-  }
+  const onSubmit = async (data: FieldValues) => {
+    try {
+      const res = await login(data).unwrap();
+      toast.success(res.message || "Admin login successfully!");
+      router.push("/dashboard");
+    } catch (err: any) {
+      toast.error(err?.data?.message || "Invalid email or password");
+    }
+  };
 
   return (
-    /* ✅ Center X + Y */
-    <div className="min-h-screen flex items-center justify-center p-4 bg-muted/40">
+    <div className="min-h-screen flex items-center justify-center p-5">
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-center text-xl font-semibold">
@@ -54,29 +54,27 @@ export default function LoginPage() {
         <CardContent>
           <form id="login-form" onSubmit={form.handleSubmit(onSubmit)}>
             <FieldGroup>
-              {/* ✅ Email */}
+              {/* Email */}
               <Controller
                 name="email"
                 control={form.control}
+                rules={{ required: "Email is required" }}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
                     <FieldLabel>Email</FieldLabel>
-                    <Input
-                      {...field}
-                      type="email"
-                      placeholder="admin@email.com"
-                    />
-                    {fieldState.invalid && (
+                    <Input {...field} type="email" placeholder="Enter Email" />
+                    {fieldState.error && (
                       <FieldError errors={[fieldState.error]} />
                     )}
                   </Field>
                 )}
               />
 
-              {/* ✅ Password */}
+              {/* Password */}
               <Controller
                 name="password"
                 control={form.control}
+                rules={{ required: "Password is required" }}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
                     <FieldLabel>Password</FieldLabel>
@@ -85,7 +83,7 @@ export default function LoginPage() {
                       type="password"
                       placeholder="Enter password"
                     />
-                    {fieldState.invalid && (
+                    {fieldState.error && (
                       <FieldError errors={[fieldState.error]} />
                     )}
                   </Field>
@@ -95,16 +93,19 @@ export default function LoginPage() {
           </form>
         </CardContent>
 
-        <CardFooter className="flex gap-2">
+        <CardFooter>
           <Button
             type="submit"
             form="login-form"
+            disabled={isLoading}
             className="w-full bg-[#A9F877] hover:bg-[#C1FF72] text-black"
           >
-            Login
+            {isLoading ? "Logging in..." : "Login"}
           </Button>
         </CardFooter>
       </Card>
     </div>
   );
-}
+};
+
+export default LoginPage;
