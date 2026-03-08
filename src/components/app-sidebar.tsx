@@ -13,21 +13,21 @@ import {
 } from "lucide-react";
 
 import { NavItems } from "@/components/nav-items";
-import { NavUser } from "@/components/nav-user";
+// import { NavUser } from "@/components/nav-user";
 import { SidebarLogo } from "@/components/sidebar-logo";
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
+  // SidebarFooter,
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
 
-const user = {
-  name: "Admin",
-  email: "admin@gmail.com",
-  avatar: "/avatars/shadcn.jpg",
-};
+// const user = {
+//   name: "Admin",
+//   email: "admin@gmail.com",
+//   avatar: "/avatars/shadcn.jpg",
+// };
 
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   const navItems = [
@@ -78,9 +78,9 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
         <NavItems items={navItems} />
       </SidebarContent>
 
-      <SidebarFooter>
+      {/* <SidebarFooter>
         <NavUser user={user} />
-      </SidebarFooter>
+      </SidebarFooter> */}
 
       <SidebarRail />
     </Sidebar>

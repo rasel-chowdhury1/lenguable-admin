@@ -1,7 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { Controller, FieldValues, useForm } from "react-hook-form";
+
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -11,28 +15,37 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
 import { useLoginMutation } from "@/redux/features/authApi";
-import { toast } from "sonner";
+
+const loginSchema = z.object({
+  email: z.string().email({ message: "Invalid email address" }),
+  password: z
+    .string()
+    .min(6, { message: "Password must be at least 6 characters" }),
+});
+
+type LoginFormValues = z.infer<typeof loginSchema>;
 
 const LoginPage = () => {
   const router = useRouter();
   const [login, { isLoading }] = useLoginMutation();
 
-  const form = useForm<FieldValues>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "admin@gmail.com",
       password: "admin@123",
     },
   });
 
-  const onSubmit = async (data: FieldValues) => {
+  const onSubmit = async (data: LoginFormValues) => {
     try {
       const res = await login(data).unwrap();
       toast.success(res.message || "Admin login successfully!");
@@ -52,55 +65,48 @@ const LoginPage = () => {
         </CardHeader>
 
         <CardContent>
-          <form id="login-form" onSubmit={form.handleSubmit(onSubmit)}>
-            <FieldGroup>
-              {/* Email */}
-              <Controller
-                name="email"
-                control={form.control}
-                rules={{ required: "Email is required" }}
-                render={({ field, fieldState }) => (
-                  <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel>Email</FieldLabel>
-                    <Input {...field} type="email" placeholder="Enter Email" />
-                    {fieldState.error && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </Field>
-                )}
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {/* Email */}
+            <div>
+              <Label className="mb-1 block">Email</Label>
+              <Input
+                {...register("email")}
+                type="email"
+                placeholder="Enter Email"
               />
+              {errors.email && (
+                <p className="text-sm text-red-500 mt-1">
+                  {errors.email.message}
+                </p>
+              )}
+            </div>
 
-              {/* Password */}
-              <Controller
-                name="password"
-                control={form.control}
-                rules={{ required: "Password is required" }}
-                render={({ field, fieldState }) => (
-                  <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel>Password</FieldLabel>
-                    <Input
-                      {...field}
-                      type="password"
-                      placeholder="Enter password"
-                    />
-                    {fieldState.error && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </Field>
-                )}
+            {/* Password */}
+            <div>
+              <Label className="mb-1 block">Password</Label>
+              <Input
+                {...register("password")}
+                type="password"
+                placeholder="Enter Password"
               />
-            </FieldGroup>
+              {errors.password && (
+                <p className="text-sm text-red-500 mt-1">
+                  {errors.password.message}
+                </p>
+              )}
+            </div>
           </form>
         </CardContent>
 
         <CardFooter>
           <Button
             type="submit"
-            form="login-form"
+            form=""
+            onClick={handleSubmit(onSubmit)}
             disabled={isLoading}
             className="w-full bg-[#A9F877] hover:bg-[#C1FF72] text-black"
           >
-            {isLoading ? "Logging in..." : "Login"}
+            {isLoading ? "Logging..." : "Login"}
           </Button>
         </CardFooter>
       </Card>
