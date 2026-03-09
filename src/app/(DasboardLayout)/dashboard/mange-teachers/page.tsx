@@ -1,9 +1,11 @@
 "use client";
+
 import { useState } from "react";
 import { Plus, Eye, AlertTriangle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+
 import {
   Table,
   TableBody,
@@ -12,53 +14,39 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+
 import AddTeacherModal from "./_components/AddTeacherModal";
-import { Teacher } from "@/types";
-import { getInitials } from "@/utils";
 import TeacherDetailModal from "./_components/TeacherDetailModal";
 
+import { Teacher } from "@/types";
+import { getInitials } from "@/utils";
 
-const initialTeachers: Teacher[] = [
-  {
-    name: "John Smith",
-    email: "john@lenguable.com",
-    hours: 8,
-    totalHours: 67,
-    totalPaid: "$670",
-    status: "Active",
-    cancellations: 0,
-  },
-  {
-    name: "Sarah Johnson",
-    email: "sarah@lenguable.com",
-    hours: 12,
-    totalHours: 94,
-    totalPaid: "$940",
-    status: "Active",
-    cancellations: 1,
-  },
-  {
-    name: "Michael Brown",
-    email: "michael@lenguable.com",
-    hours: 5,
-    totalHours: 43,
-    totalPaid: "$430",
-    status: "Warning",
-    cancellations: 2,
-  },
-];
-
+import { useGetTeacherQuery } from "@/redux/features/teacherApi";
 
 export default function TeacherManagement() {
-  const [teachers] = useState<Teacher[]>(initialTeachers);
   const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(null);
-  const [addOpen, setAddOpen] = useState<boolean>(false);
+  const [addOpen, setAddOpen] = useState(false);
+
+  const { data, isLoading, isError } = useGetTeacherQuery(undefined);
+
+  const teachers: Teacher[] = data?.data || [];
+
+  if (isLoading) {
+    return <p className="text-center mt-10">Loading teachers...</p>;
+  }
+
+  if (isError) {
+    return (
+      <p className="text-center mt-10 text-red-500">Failed to load teachers</p>
+    );
+  }
 
   return (
     <div className="max-w-6xl mx-auto p-5 my-10">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Teacher Management</h1>
+
         <Button
           onClick={() => setAddOpen(true)}
           className="bg-[#A9F877] hover:bg-[#C1FF72] text-black"
@@ -91,15 +79,15 @@ export default function TeacherManagement() {
           </TableHeader>
 
           <TableBody>
-            {teachers.map((t, i) => (
+            {teachers.map((t) => (
               <TableRow
-                key={i}
+                key={t._id}
                 className="border-b border-gray-100 last:border-0 hover:bg-gray-50/50"
               >
                 {/* Avatar + Name */}
                 <TableCell className="pl-5 py-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-600 shrink-0">
+                    <div className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-600">
                       {getInitials(t.name)}
                     </div>
                     <span className="text-sm text-gray-900">{t.name}</span>
@@ -109,30 +97,33 @@ export default function TeacherManagement() {
                 <TableCell className="text-sm text-gray-600 py-4">
                   {t.email}
                 </TableCell>
+
                 <TableCell className="text-sm text-gray-800 py-4">
-                  {t.hours}
-                </TableCell>
-                <TableCell className="text-sm text-gray-800 py-4">
-                  {t.totalHours}
-                </TableCell>
-                <TableCell className="text-sm font-bold text-gray-900 py-4">
-                  {t.totalPaid}
+                  {t.totalClasses}
                 </TableCell>
 
-                {/* Status Badge */}
+                <TableCell className="text-sm text-gray-800 py-4">
+                  {t.totalClasses}
+                </TableCell>
+
+                <TableCell className="text-sm font-bold text-gray-900 py-4">
+                  ${t.totalEarnings}
+                </TableCell>
+
+                {/* Status */}
                 <TableCell className="py-4">
-                  {t.status === "Active" ? (
-                    <Badge className="bg-[#A9F877] hover:bg-[#C1FF72] text-black rounded-full border-0 px-3">
+                  {t.status === "ACTIVE" ? (
+                    <Badge className="bg-[#A9F877] text-black rounded-full border-0 px-3">
                       Active
                     </Badge>
                   ) : (
                     <Badge className="bg-red-600 rounded-full border-0 px-3 gap-1">
-                      <AlertTriangle size={11} /> Warning
+                      <AlertTriangle size={11} /> Inactive
                     </Badge>
                   )}
                 </TableCell>
 
-                {/* View Details */}
+                {/* Actions */}
                 <TableCell className="py-4">
                   <Button
                     variant="outline"
@@ -150,11 +141,13 @@ export default function TeacherManagement() {
       </div>
 
       {/* Modals */}
+
       <TeacherDetailModal
         teacher={selectedTeacher}
         open={!!selectedTeacher}
         onClose={() => setSelectedTeacher(null)}
       />
+
       <AddTeacherModal open={addOpen} onClose={() => setAddOpen(false)} />
     </div>
   );

@@ -47,30 +47,32 @@ const TeacherDetailModal = ({
         <div className="grid grid-cols-2 gap-3 mb-3">
           <div className="border border-gray-200 rounded-xl p-4">
             <p className="text-xs text-gray-400 mb-1">Hours This Week</p>
-            <p className="text-2xl font-bold text-gray-900">{teacher.hours}</p>
+            <p className="text-2xl font-bold text-gray-900">
+              {teacher.totalClasses}
+            </p>
           </div>
           <div className="border border-gray-200 rounded-xl p-4">
             <p className="text-xs text-gray-400 mb-1">Total Hours</p>
             <p className="text-2xl font-bold text-gray-900">
-              {teacher.totalHours}
+              {teacher.totalClasses}
             </p>
           </div>
           <div className="border border-gray-200 rounded-xl p-4">
             <p className="text-xs text-gray-400 mb-1">Total Paid</p>
             <p className="text-2xl font-bold text-gray-900">
-              {teacher.totalPaid}
+              {teacher.totalEarnings}
             </p>
           </div>
           <div className="border border-gray-200 rounded-xl p-4">
             <p className="text-xs text-gray-400 mb-1">Cancellations (24h)</p>
             <p className="text-2xl font-bold text-gray-900">
-              {teacher.cancellations}
+              {teacher.cancellationsWithin24Hours}
             </p>
           </div>
         </div>
 
         {/* Warning alert — only for Warning status */}
-        {teacher.status === "Warning" && (
+        {teacher.status === "WARNING" && (
           <div className="flex items-start gap-2 bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-1">
             <AlertTriangle size={16} className="text-red-500 mt-0.5 shrink-0" />
             <div>
@@ -78,8 +80,8 @@ const TeacherDetailModal = ({
                 Warning: Multiple late cancellations
               </p>
               <p className="text-xs text-red-500 mt-0.5">
-                This teacher has {teacher.cancellations} cancellations within 24
-                hours.
+                This teacher has {teacher.cancellationsWithin24Hours}{" "}
+                cancellations within 24 hours.
               </p>
             </div>
           </div>

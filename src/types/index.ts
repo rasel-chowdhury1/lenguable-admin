@@ -1,9 +1,10 @@
 export type Teacher = {
+  _id: string;
   name: string;
   email: string;
-  hours: number;
-  totalHours: number;
-  totalPaid: string;
-  status: "Active" | "Warning";
-  cancellations: number;
+  status: "ACTIVE" | "WARNING";
+  totalClasses: number;
+  totalEarnings: number;
+  cancellationsWithin24Hours: number;
+  createdAt: string;
 };
