@@ -10,12 +10,20 @@ export type Teacher = {
 };
 
 export interface PricingPackage {
-  id: string;
+  _id?: string;
   name: string;
-  validity: string;
   price: number;
   credits: number;
   perClassPrice?: number;
   features: string[];
   isMostPopular: boolean;
 }
+
+export type PackageFormValues = {
+  name: string;
+  price: number;
+  credits: number;
+  perClassPrice?: number;
+  isMostPopular: boolean;
+  features: { value: string }[];
+};
