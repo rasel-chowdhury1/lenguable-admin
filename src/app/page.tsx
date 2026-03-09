@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 import { useLoginMutation } from "@/redux/features/authApi";
+import { Spinner } from "@/components/ui/spinner";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -101,12 +102,11 @@ const LoginPage = () => {
         <CardFooter>
           <Button
             type="submit"
-            form=""
             onClick={handleSubmit(onSubmit)}
             disabled={isLoading}
             className="w-full bg-[#A9F877] hover:bg-[#C1FF72] text-black"
           >
-            {isLoading ? "Logging..." : "Login"}
+            {isLoading ? <Spinner /> : "Login"}
           </Button>
         </CardFooter>
       </Card>
