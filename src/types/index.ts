@@ -27,3 +27,28 @@ export type PackageFormValues = {
   isMostPopular: boolean;
   features: { value: string }[];
 };
+
+export type Lesson = {
+  _id?: string;
+  level: string;
+  title: string;
+  content: string;
+  exercises: string;
+};
+
+export type Resource = {
+  title: string;
+  type: string;
+};
+
+export type LessonFormData = {
+  level: string;
+  title: string;
+  content: string;
+  exercises: string;
+};
+
+export type ResourceFormData = {
+  title: string;
+  type: string;
+};
