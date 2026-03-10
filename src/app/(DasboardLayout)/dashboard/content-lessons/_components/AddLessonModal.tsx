@@ -25,6 +25,7 @@ import {
   useCreateLessonMutation,
   useUpdateLessonMutation,
 } from "@/redux/features/LessonApi";
+import { toast } from "sonner";
 
 type Props = {
   open: boolean;
@@ -53,12 +54,11 @@ const AddLessonModal = ({ open, onClose, lesson }: Props) => {
   const onSubmit = async (data: LessonFormData) => {
     try {
       if (lesson?._id) {
-        await updateLesson({
-          id: lesson._id,
-          data,
-        }).unwrap();
+        const res = await updateLesson({ id: lesson._id, data }).unwrap();
+        toast.success(res?.message || "Lesson updated successfully !");
       } else {
-        await createLesson(data).unwrap();
+        const res = await createLesson(data).unwrap();
+        toast.success(res?.message || "Lesson created successfully !");
       }
 
       reset();

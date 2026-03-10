@@ -7,29 +7,27 @@ import { Lesson, Resource } from "@/types";
 import AddLessonModal from "./_components/AddLessonModal";
 import AddResourceModal from "./_components/AddResourceModal";
 import { useGetAllLessonsQuery } from "@/redux/features/LessonApi";
-
-const initialResources: Resource[] = [
-  { title: "Grammar Reference Guide", type: "PDF" },
-  { title: "Vocabulary Lists", type: "Document" },
-  { title: "Pronunciation Videos", type: "Video" },
-];
+import { useGetAllResourcesQuery } from "@/redux/features/resourceApi";
 
 export default function CoursePage() {
-  const [resources] = useState<Resource[]>(initialResources);
   const [lessonOpen, setLessonOpen] = useState(false);
   const [resourceOpen, setResourceOpen] = useState(false);
 
-  //  selected lesson for edit
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
+  const [selectedResource, setSelectedResource] = useState<Resource | null>(null);
 
   const { data, isLoading, isError } = useGetAllLessonsQuery(undefined);
   const lessons: Lesson[] = data?.data || [];
+
+  const { data: resourceData } = useGetAllResourcesQuery(undefined);
+  const resources: Resource[] = resourceData?.data || [];
 
   if (isLoading) return <p>Loading...</p>;
   if (isError) return <p>Something went wrong</p>;
 
   return (
     <div className="max-w-6xl mx-auto p-5 my-10">
+
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Course Lessons</h1>
@@ -42,15 +40,17 @@ export default function CoursePage() {
             }}
             className="bg-[#A9F877] hover:bg-[#C1FF72] text-black"
           >
-            <Plus size={15} /> Add Lesson
+            <Plus size={15}/> Add Lesson
           </Button>
 
           <Button
             variant="outline"
-            onClick={() => setResourceOpen(true)}
-            className="gap-2 text-gray-700 font-medium"
+            onClick={() => {
+              setSelectedResource(null);
+              setResourceOpen(true);
+            }}
           >
-            <Plus size={15} /> Add Resource
+            <Plus size={15}/> Add Resource
           </Button>
         </div>
       </div>
@@ -65,29 +65,26 @@ export default function CoursePage() {
           {lessons.map((lesson) => (
             <div
               key={lesson._id}
-              className="flex items-center justify-between border border-gray-200 rounded-lg px-4 py-3 hover:bg-gray-50/60 transition-colors"
+              className="flex items-center justify-between border rounded-lg px-4 py-3"
             >
               <div className="flex items-center gap-3">
-                <FileText size={16} className="text-blue-500 shrink-0" />
+                <FileText size={16} className="text-blue-500" />
 
-                <span className="text-sm font-semibold text-gray-900">
-                  {lesson.title}{" "}
-                  <span className="text-gray-400 font-normal">
-                    ({lesson.level})
-                  </span>
+                <span className="text-sm font-semibold">
+                  {lesson.title}
+                  <span className="text-gray-400"> ({lesson.level})</span>
                 </span>
               </div>
 
               <Button
                 variant="ghost"
                 size="sm"
-                className="gap-1.5 text-sm text-gray-600 hover:text-gray-900 font-medium"
                 onClick={() => {
-                  setSelectedLesson(lesson); 
+                  setSelectedLesson(lesson);
                   setLessonOpen(true);
                 }}
               >
-                <SquarePen size={14} /> Edit
+                <SquarePen size={14}/> Edit
               </Button>
             </div>
           ))}
@@ -101,28 +98,29 @@ export default function CoursePage() {
         </p>
 
         <div className="px-3 pb-3 space-y-2">
-          {resources.map((res, i) => (
+          {resources.map((res) => (
             <div
-              key={i}
-              className="flex items-center justify-between border border-gray-200 rounded-lg px-4 py-3 hover:bg-gray-50/60 transition-colors"
+              key={res._id}
+              className="flex items-center justify-between border rounded-lg px-4 py-3"
             >
               <div className="flex items-center gap-3">
-                <FileText size={16} className="text-green-500 shrink-0" />
+                <FileText size={16} className="text-green-500" />
 
-                <span className="text-sm font-semibold text-gray-900">
-                  {res.title}{" "}
-                  <span className="text-gray-400 font-normal">
-                    ({res.type})
-                  </span>
+                <span className="text-sm font-semibold">
+                  {res.title}
+                  <span className="text-gray-400"> ({res.type})</span>
                 </span>
               </div>
 
               <Button
                 variant="ghost"
                 size="sm"
-                className="gap-1.5 text-sm text-gray-600 hover:text-gray-900 font-medium"
+                onClick={() => {
+                  setSelectedResource(res);
+                  setResourceOpen(true);
+                }}
               >
-                <SquarePen size={14} /> Edit
+                <SquarePen size={14}/> Edit
               </Button>
             </div>
           ))}
@@ -133,14 +131,12 @@ export default function CoursePage() {
       <AddLessonModal
         open={lessonOpen}
         lesson={selectedLesson}
-        onClose={() => {
-          setLessonOpen(false);
-          setSelectedLesson(null);
-        }}
+        onClose={() => setLessonOpen(false)}
       />
 
       <AddResourceModal
         open={resourceOpen}
+        resource={selectedResource}
         onClose={() => setResourceOpen(false)}
       />
     </div>

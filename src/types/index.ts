@@ -37,6 +37,7 @@ export type Lesson = {
 };
 
 export type Resource = {
+  _id?: string;
   title: string;
   type: string;
 };
