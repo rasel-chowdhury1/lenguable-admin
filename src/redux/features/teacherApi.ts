@@ -4,7 +4,7 @@ export const teacherApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
     getTeacher: build.query({
       query: () => ({
-        url: "/teacher/all-teachers",
+        url: "/teacher",
         method: "GET",
       }),
     }),

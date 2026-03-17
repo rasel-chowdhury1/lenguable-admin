@@ -23,7 +23,7 @@ export const lessonApi = baseApi.injectEndpoints({
     // CREATE LESSON
     createLesson: builder.mutation({
       query: (data) => ({
-        url: "/lesson/create",
+        url: "/lesson",
         method: "POST",
         body: data,
       }),

@@ -5,7 +5,7 @@ export type Teacher = {
   status: "ACTIVE" | "WARNING";
   totalClasses: number;
   totalEarnings: number;
-  cancellationsWithin24Hours: number;
+  totalCanceledClasses: number;
   createdAt: string;
 };
 
@@ -52,4 +52,31 @@ export type LessonFormData = {
 export type ResourceFormData = {
   title: string;
   type: string;
+};
+
+export type Student = {
+  _id: string;
+  name: string;
+  email: string;
+  credits: number;
+  level: string;
+  classesCompleted: number;
+  aboutMe?: string;
+  unlockedLessons?: Lesson[];
+  packages?: PricingPackage[];
+  booking?: {
+    _id: string;
+    date: string;
+    status: string;
+    teacherId?: {
+      _id: string;
+      name: string;
+      email: string;
+    };
+  }[];
+  interests?: string[];
+};
+
+export type AddCreditsFormData = {
+  credits: number;
 };

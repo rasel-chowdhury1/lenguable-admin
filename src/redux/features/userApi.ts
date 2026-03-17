@@ -4,7 +4,7 @@ export const userApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
     createTeacher: build.mutation({
       query: (data) => ({
-        url: "/teacher/create-teacher",
+        url: "/teacher",
         method: "POST",
         body: data,
       }),

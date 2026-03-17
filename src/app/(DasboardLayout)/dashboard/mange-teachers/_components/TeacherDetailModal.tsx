@@ -66,7 +66,7 @@ const TeacherDetailModal = ({
           <div className="border border-gray-200 rounded-xl p-4">
             <p className="text-xs text-gray-400 mb-1">Cancellations (24h)</p>
             <p className="text-2xl font-bold text-gray-900">
-              {teacher.cancellationsWithin24Hours}
+              {teacher.totalCanceledClasses}
             </p>
           </div>
         </div>
@@ -80,8 +80,8 @@ const TeacherDetailModal = ({
                 Warning: Multiple late cancellations
               </p>
               <p className="text-xs text-red-500 mt-0.5">
-                This teacher has {teacher.cancellationsWithin24Hours}{" "}
-                cancellations within 24 hours.
+                This teacher has {teacher.totalCanceledClasses} cancellations
+                within 24 hours.
               </p>
             </div>
           </div>

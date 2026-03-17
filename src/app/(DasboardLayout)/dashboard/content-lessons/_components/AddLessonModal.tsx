@@ -96,7 +96,7 @@ const AddLessonModal = ({ open, onClose, lesson }: Props) => {
                 </SelectTrigger>
 
                 <SelectContent>
-                  {["A0", "A1", "A2", "B1", "B2", "C1", "C2"].map((l) => (
+                  {["A0", "A1", "A2", "B1", "B2", "C1"].map((l) => (
                     <SelectItem key={l} value={l}>
                       {l}
                     </SelectItem>

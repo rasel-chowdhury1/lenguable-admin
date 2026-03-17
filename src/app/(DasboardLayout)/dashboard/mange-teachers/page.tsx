@@ -30,6 +30,7 @@ export default function TeacherManagement() {
   const { data, isLoading, isError } = useGetTeacherQuery(undefined);
 
   const teachers: Teacher[] = data?.data || [];
+  console.log(teachers, "From teacher management ==>");
 
   if (isLoading) {
     return <p className="text-center mt-10">Loading teachers...</p>;
@@ -118,7 +119,7 @@ export default function TeacherManagement() {
                     </Badge>
                   ) : (
                     <Badge className="bg-red-600 rounded-full border-0 px-3 gap-1">
-                      <AlertTriangle size={11} /> Inactive
+                      <AlertTriangle size={11} /> Warning
                     </Badge>
                   )}
                 </TableCell>

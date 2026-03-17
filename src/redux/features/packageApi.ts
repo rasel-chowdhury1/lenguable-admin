@@ -4,13 +4,13 @@ export const packageApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
     createPackage: build.mutation({
       query: (data) => ({
-        url: "/package/create-package",
+        url: "/package",
         method: "POST",
         body: data,
       }),
     }),
     getAllPackages: build.query({
-      query: () => "/package/all-package",
+      query: () => "/package",
     }),
     getSinglePackage: build.query({
       query: (id) => `/package/${id}`,
