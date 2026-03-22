@@ -30,7 +30,7 @@ export default function TeacherManagement() {
   const { data, isLoading, isError } = useGetTeacherQuery(undefined);
 
   const teachers: Teacher[] = data?.data || [];
-  console.log(teachers, "From teacher management ==>");
+  // console.log(teachers, "From teacher management ==>");
 
   if (isLoading) {
     return <p className="text-center mt-10">Loading teachers...</p>;

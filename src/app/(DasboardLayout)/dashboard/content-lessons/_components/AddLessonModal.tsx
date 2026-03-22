@@ -70,7 +70,7 @@ const AddLessonModal = ({ open, onClose, lesson }: Props) => {
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md rounded-lg">
+      <DialogContent className="sm:max-w-lg rounded-lg">
         <DialogHeader>
           <DialogTitle className="text-base font-semibold">
             {lesson ? "Edit Lesson" : "Add New Lesson"}

@@ -45,8 +45,8 @@ export default function StudentManagement() {
   const [detailOpen, setDetailOpen] = useState(false);
   const [creditsOpen, setCreditsOpen] = useState(false);
 
-  const student = data?.data || [];
-  console.log(student, "from student management ==>");
+  // const student = data?.data || [];
+  // console.log(student, "from student management ==>");
   // Process API data for table
   const students: Student[] = useMemo(() => {
     if (!data?.data) return [];

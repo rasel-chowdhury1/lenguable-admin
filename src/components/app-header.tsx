@@ -3,21 +3,14 @@
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "./ui/sidebar";
 import { Button } from "./ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { LogOut, Globe, LogIn } from "lucide-react";
-import { useState } from "react";
+import { LogOut, LogIn } from "lucide-react";
 import { useGetMeQuery } from "@/redux/features/userApi";
 import { useLogoutMutation } from "@/redux/features/authApi";
 import { useRouter } from "next/navigation";
+import GoogleTranslate from "./shared/GoogleTranslate";
 
 const AppHeader = () => {
   const router = useRouter();
-  const [language, setLanguage] = useState<"en" | "es">("en");
   const { data } = useGetMeQuery(undefined);
   const [logout] = useLogoutMutation();
   const user = data?.data;
@@ -42,28 +35,8 @@ const AppHeader = () => {
 
         {/* RIGHT SIDE */}
         <div className="flex items-center gap-3 px-4">
-          {/* LANGUAGE DROPDOWN */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                className="gap-2 bg-sidebar border-none hover:bg-sidebar hover:cursor-pointer"
-              >
-                <Globe className="h-4 w-4" />
-                {language === "en" ? "EN" : "ES"}
-              </Button>
-            </DropdownMenuTrigger>
-
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => setLanguage("en")}>
-                EN
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setLanguage("es")}>
-                ES
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {/* LANGUAGE TRANSLATE */}
+          <GoogleTranslate />
 
           {/* LOGIN / LOGOUT BUTTON */}
           {user ? (
