@@ -14,13 +14,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { PackageFormValues, PricingPackage } from "@/types";
-import { Plus, X } from "lucide-react";;
+import { Plus, X } from "lucide-react";
 
 const defaultValues: PackageFormValues = {
   name: "",
   price: 0,
   credits: 0,
   perClassPrice: 0,
+  discount: 0,
   isMostPopular: false,
   features: [],
 };
@@ -58,6 +59,7 @@ const PackageModal = ({
         price: editPackage.price,
         credits: editPackage.credits,
         perClassPrice: editPackage.perClassPrice,
+        discount: editPackage.discount,
         isMostPopular: editPackage.isMostPopular,
         features: editPackage.features.map((f) => ({ value: f })),
       });
@@ -73,6 +75,7 @@ const PackageModal = ({
       price: data.price,
       credits: data.credits,
       perClassPrice: data.perClassPrice,
+      discount: data.discount,
       isMostPopular: data.isMostPopular,
       features: data.features.map((f) => f.value.trim()).filter(Boolean),
     };
@@ -84,7 +87,9 @@ const PackageModal = ({
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{editPackage ? "Edit Package" : "Add Package"}</DialogTitle>
+          <DialogTitle>
+            {editPackage ? "Edit Package" : "Add Package"}
+          </DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 py-2">
@@ -105,7 +110,7 @@ const PackageModal = ({
                 {...register("price", {
                   required: "Price is required",
                   min: { value: 0, message: "Price cannot be negative" },
-                  valueAsNumber: true, // <-- Convert string to number
+                  valueAsNumber: true,
                 })}
               />
               {errors.price && (
@@ -123,7 +128,7 @@ const PackageModal = ({
                 {...register("credits", {
                   required: "Credits are required",
                   min: { value: 1, message: "Credits must be at least 1" },
-                  valueAsNumber: true, // <-- Convert string to number
+                  valueAsNumber: true,
                 })}
               />
               {errors.credits && (
@@ -139,13 +144,29 @@ const PackageModal = ({
                 placeholder="Optional"
                 {...register("perClassPrice", {
                   min: { value: 0, message: "Cannot be negative" },
-                  valueAsNumber: true, // <-- Convert string to number
+                  valueAsNumber: true,
                 })}
               />
               {errors.perClassPrice && (
-                <p className="text-red-500 text-sm">{errors.perClassPrice.message}</p>
+                <p className="text-red-500 text-sm">
+                  {errors.perClassPrice.message}
+                </p>
               )}
             </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label>Discount (%)</Label>
+            <Input
+              type="number"
+              placeholder="Optional"
+              {...register("discount", {
+                valueAsNumber: true,
+              })}
+            />
+            {errors.discount && (
+              <p className="text-red-500 text-sm">{errors.discount.message}</p>
+            )}
           </div>
 
           <Controller

@@ -1,5 +1,7 @@
+/* eslint-disable react-hooks/set-state-in-effect */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
@@ -7,33 +9,69 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import { toast } from "sonner";
+import {
+  useGetAnnouncementQuery,
+  useCreateAnnouncementMutation,
+  useUpdateAnnouncementMutation,
+} from "@/redux/features/announcementApi";
 
-// ── Types ─────────────────────────────────────────────────────────────────────
 type SettingsFormData = {
   announcementTitle: string;
   announcementText: string;
 };
 
-// ── Main Page ─────────────────────────────────────────────────────────────────
 export default function SettingsPage() {
   const [enableAnnouncement, setEnableAnnouncement] = useState<boolean>(false);
   const [sendReminder, setSendReminder] = useState<boolean>(true);
   const [sendReview, setSendReview] = useState<boolean>(true);
 
-  const { register, handleSubmit } = useForm<SettingsFormData>({
+  const { data, refetch } = useGetAnnouncementQuery(undefined);
+  const announcement = data?.data;
+
+  const [createAnnouncement] = useCreateAnnouncementMutation();
+  const [updateAnnouncement] = useUpdateAnnouncementMutation();
+
+  const { register, handleSubmit, reset } = useForm<SettingsFormData>({
     defaultValues: {
       announcementTitle: "Important Update",
       announcementText: "",
     },
   });
 
-  function onSubmit(data: SettingsFormData): void {
-    console.log("Settings saved:", {
-      enableAnnouncement,
-      sendReminder,
-      sendReview,
-      ...data,
-    });
+  useEffect(() => {
+    if (announcement) {
+      reset({
+        announcementTitle: announcement.title,
+        announcementText: announcement.text,
+      });
+      setEnableAnnouncement(announcement.isEnabled);
+    }
+  }, [announcement, reset]);
+
+  async function onSubmit(data: SettingsFormData): Promise<void> {
+    try {
+      const payload = {
+        title: data.announcementTitle,
+        text: data.announcementText,
+        isEnabled: enableAnnouncement,
+      };
+
+      if (announcement?._id) {
+        const res = await updateAnnouncement({
+          id: announcement._id,
+          ...payload,
+        }).unwrap();
+        toast.success(res.message || "Announcement updated successfully!");
+      } else {
+        const res = await createAnnouncement(payload).unwrap();
+        toast.success(res.message || "Announcement created successfully!");
+      }
+
+      refetch();
+    } catch (err: any) {
+      toast.error(err?.data?.message || "Failed to save announcement!");
+    }
   }
 
   return (

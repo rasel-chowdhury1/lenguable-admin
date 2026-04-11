@@ -28,12 +28,10 @@ export default function ManagePricingPage() {
   const savePackage = async (pkg: PricingPackage) => {
     try {
       if (pkg._id) {
-        // Update existing
         const { _id, ...data } = pkg;
         const res = await updatePackage({ id: _id, ...data }).unwrap();
         toast.success(res.message || "Package updated successfully!");
       } else {
-        // Create new
         const res = await createPackage(pkg).unwrap();
         toast.success(res.message || "Package created successfully!");
       }
@@ -125,6 +123,11 @@ export default function ManagePricingPage() {
                       </span>
                     )}
                   </div>
+                  {pkg.discount && (
+                    <p className="text-sm font-semibold text-orange-400 mt-1">
+                      {pkg.discount}% off
+                    </p>
+                  )}
                   <p className="text-sm font-semibold text-[#A9F877] mt-1">
                     {pkg.credits} Credit
                   </p>
