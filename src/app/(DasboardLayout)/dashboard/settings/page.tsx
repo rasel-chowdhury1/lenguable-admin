@@ -15,6 +15,7 @@ import {
   useCreateAnnouncementMutation,
   useUpdateAnnouncementMutation,
 } from "@/redux/features/announcementApi";
+import { useSendReminderMutation } from "@/redux/features/reminderApi";
 
 type SettingsFormData = {
   announcementTitle: string;
@@ -23,7 +24,6 @@ type SettingsFormData = {
 
 export default function SettingsPage() {
   const [enableAnnouncement, setEnableAnnouncement] = useState<boolean>(false);
-  const [sendReminder, setSendReminder] = useState<boolean>(true);
   const [sendReview, setSendReview] = useState<boolean>(true);
 
   const { data, refetch } = useGetAnnouncementQuery(undefined);
@@ -31,6 +31,7 @@ export default function SettingsPage() {
 
   const [createAnnouncement] = useCreateAnnouncementMutation();
   const [updateAnnouncement] = useUpdateAnnouncementMutation();
+  const [sendReminder] = useSendReminderMutation();
 
   const { register, handleSubmit, reset } = useForm<SettingsFormData>({
     defaultValues: {
@@ -73,6 +74,15 @@ export default function SettingsPage() {
       toast.error(err?.data?.message || "Failed to save announcement!");
     }
   }
+
+  const handleSendReminder = async (timeLabel: "24h" | "2h") => {
+    try {
+      const res = await sendReminder(timeLabel).unwrap();
+      toast.success(res.message || "Reminder emails sent!");
+    } catch (err: any) {
+      toast.error(err?.data?.message || "Failed to send reminders!");
+    }
+  };
 
   return (
     <div className="max-w-6xl mx-auto p-5 my-10">
@@ -148,11 +158,24 @@ export default function SettingsPage() {
                 Send reminders 24h and 2h before class
               </p>
             </div>
-            <Switch
-              checked={sendReminder}
-              onCheckedChange={setSendReminder}
-              className="data-[state=checked]:bg-[#A9F877]"
-            />
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={() => handleSendReminder("24h")}
+              >
+                Send 24h
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={() => handleSendReminder("2h")}
+              >
+                Send 2h
+              </Button>
+            </div>
           </div>
 
           {/* Send Review Request Emails */}
