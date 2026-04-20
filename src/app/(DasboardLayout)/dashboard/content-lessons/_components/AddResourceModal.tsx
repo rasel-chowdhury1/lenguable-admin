@@ -46,6 +46,7 @@ const AddResourceModal = ({ open, onClose, resource }: Props) => {
   useEffect(() => {
     if (resource) {
       setValue("title", resource.title);
+      setValue("url", resource.url);
       setValue("type", resource.type);
     }
   }, [resource, setValue]);
@@ -87,6 +88,14 @@ const AddResourceModal = ({ open, onClose, resource }: Props) => {
             <Input
               {...register("title", { required: true })}
               placeholder="Resource title"
+            />
+          </div>
+          <div>
+            <Label className="mb-1 block text-sm font-medium">URL</Label>
+
+            <Input
+              {...register("url", { required: true })}
+              placeholder="Resource URL"
             />
           </div>
 

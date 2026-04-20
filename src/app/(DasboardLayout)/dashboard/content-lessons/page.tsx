@@ -14,7 +14,9 @@ export default function CoursePage() {
   const [resourceOpen, setResourceOpen] = useState(false);
 
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
-  const [selectedResource, setSelectedResource] = useState<Resource | null>(null);
+  const [selectedResource, setSelectedResource] = useState<Resource | null>(
+    null,
+  );
 
   const { data, isLoading, isError } = useGetAllLessonsQuery(undefined);
   const lessons: Lesson[] = data?.data || [];
@@ -27,7 +29,6 @@ export default function CoursePage() {
 
   return (
     <div className="max-w-6xl mx-auto p-5 my-10">
-
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Course Lessons</h1>
@@ -40,7 +41,7 @@ export default function CoursePage() {
             }}
             className="bg-[#A9F877] hover:bg-[#C1FF72] text-black"
           >
-            <Plus size={15}/> Add Lesson
+            <Plus size={15} /> Add Lesson
           </Button>
 
           <Button
@@ -50,7 +51,7 @@ export default function CoursePage() {
               setResourceOpen(true);
             }}
           >
-            <Plus size={15}/> Add Resource
+            <Plus size={15} /> Add Resource
           </Button>
         </div>
       </div>
@@ -84,7 +85,7 @@ export default function CoursePage() {
                   setLessonOpen(true);
                 }}
               >
-                <SquarePen size={14}/> Edit
+                <SquarePen size={14} /> Edit
               </Button>
             </div>
           ))}
@@ -120,7 +121,7 @@ export default function CoursePage() {
                   setResourceOpen(true);
                 }}
               >
-                <SquarePen size={14}/> Edit
+                <SquarePen size={14} /> Edit
               </Button>
             </div>
           ))}

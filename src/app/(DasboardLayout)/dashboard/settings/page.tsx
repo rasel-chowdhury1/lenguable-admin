@@ -15,7 +15,7 @@ import {
   useCreateAnnouncementMutation,
   useUpdateAnnouncementMutation,
 } from "@/redux/features/announcementApi";
-import { useSendReminderMutation } from "@/redux/features/reminderApi";
+// import { useSendReminderMutation } from "@/redux/features/reminderApi";
 
 type SettingsFormData = {
   announcementTitle: string;
@@ -24,14 +24,14 @@ type SettingsFormData = {
 
 export default function SettingsPage() {
   const [enableAnnouncement, setEnableAnnouncement] = useState<boolean>(false);
-  const [sendReview, setSendReview] = useState<boolean>(true);
+  // const [sendReview, setSendReview] = useState<boolean>(true);
 
   const { data, refetch } = useGetAnnouncementQuery(undefined);
   const announcement = data?.data;
 
   const [createAnnouncement] = useCreateAnnouncementMutation();
   const [updateAnnouncement] = useUpdateAnnouncementMutation();
-  const [sendReminder] = useSendReminderMutation();
+  // const [sendReminder] = useSendReminderMutation();
 
   const { register, handleSubmit, reset } = useForm<SettingsFormData>({
     defaultValues: {
@@ -75,14 +75,14 @@ export default function SettingsPage() {
     }
   }
 
-  const handleSendReminder = async (timeLabel: "24h" | "2h") => {
-    try {
-      const res = await sendReminder(timeLabel).unwrap();
-      toast.success(res.message || "Reminder emails sent!");
-    } catch (err: any) {
-      toast.error(err?.data?.message || "Failed to send reminders!");
-    }
-  };
+  // const handleSendReminder = async (timeLabel: "24h" | "2h") => {
+  //   try {
+  //     const res = await sendReminder(timeLabel).unwrap();
+  //     toast.success(res.message || "Reminder emails sent!");
+  //   } catch (err: any) {
+  //     toast.error(err?.data?.message || "Failed to send reminders!");
+  //   }
+  // };
 
   return (
     <div className="max-w-6xl mx-auto p-5 my-10">
@@ -138,8 +138,7 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        {/* Email Settings Section */}
-        <div className="border border-gray-200 rounded-xl bg-white p-6 space-y-4">
+        {/* <div className="border border-gray-200 rounded-xl bg-white p-6 space-y-4">
           <h2 className="text-base font-semibold text-gray-900">
             Email Settings
           </h2>
@@ -148,7 +147,6 @@ export default function SettingsPage() {
             Configure automated email notifications
           </p>
 
-          {/* Send Reminder Emails */}
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-semibold text-gray-800">
@@ -178,7 +176,6 @@ export default function SettingsPage() {
             </div>
           </div>
 
-          {/* Send Review Request Emails */}
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-semibold text-gray-800">
@@ -194,7 +191,7 @@ export default function SettingsPage() {
               className="data-[state=checked]:bg-[#A9F877]"
             />
           </div>
-        </div>
+        </div> */}
 
         {/* Save Button */}
         <Button

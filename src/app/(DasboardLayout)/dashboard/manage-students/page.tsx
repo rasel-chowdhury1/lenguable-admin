@@ -30,7 +30,7 @@ const getCurrentLevel = (unlockedCount: number) => {
   return "A0";
 };
 
-//  Helper: count completed classes based on bookings
+// Helper: count completed classes based on bookings
 const getCompletedClasses = (bookings: Student["booking"] = []) => {
   const now = new Date();
   return bookings.filter(
@@ -40,30 +40,45 @@ const getCompletedClasses = (bookings: Student["booking"] = []) => {
 
 export default function StudentManagement() {
   const { data, isLoading } = useGetStudentQuery(undefined);
+
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [creditsStudent, setCreditsStudent] = useState<Student | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
   const [creditsOpen, setCreditsOpen] = useState(false);
 
-  // const student = data?.data || [];
-  // console.log(student, "from student management ==>");
-  // Process API data for table
+  // SEARCH STATE
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const student = data?.data || [];
+  console.log(student, "from student management ==>");
+
+  // Process API data + search filter
   const students: Student[] = useMemo(() => {
     if (!data?.data) return [];
-    return data.data.map((s: any) => ({
-      _id: s._id,
-      name: s.name,
-      email: s.email,
-      credits: s.credits,
-      level: getCurrentLevel(s.unlockedLessons?.length || 0),
-      classesCompleted: getCompletedClasses(s.booking || []),
-      aboutMe: s.aboutMe,
-      unlockedLessons: s.unlockedLessons || [],
-      booking: s.booking || [],
-      packages: s.packages || [],
-      interests: s.interests || [],
-    }));
-  }, [data]);
+
+    return data.data
+      .map((s: any) => ({
+        _id: s._id,
+        name: s.name,
+        email: s.email,
+        credits: s.credits,
+        level: getCurrentLevel(s.unlockedLessons?.length || 0),
+        classesCompleted: getCompletedClasses(s.booking || []),
+        aboutMe: s.aboutMe,
+        unlockedLessons: s.unlockedLessons || [],
+        booking: s.booking || [],
+        packages: s.packages || [],
+        interests: s.interests || [],
+      }))
+      .filter((s: Student) => {
+        const keyword = searchTerm.toLowerCase();
+
+        return (
+          s.name?.toLowerCase().includes(keyword) ||
+          s.email?.toLowerCase().includes(keyword)
+        );
+      });
+  }, [data, searchTerm]);
 
   function openDetail(student: Student): void {
     setSelectedStudent(student);
@@ -82,6 +97,17 @@ export default function StudentManagement() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Student Management</h1>
+
+        {/* SEARCH INPUT */}
+        <div className="mb-4 w-96">
+          <input
+            type="text"
+            placeholder="Search students by name or email..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full border px-3 py-2 rounded-md text-sm"
+          />
+        </div>
       </div>
 
       {/* Table */}
@@ -132,7 +158,6 @@ export default function StudentManagement() {
                   {s.email}
                 </TableCell>
 
-                {/* Credits */}
                 <TableCell className="py-4">
                   <Badge
                     className={`rounded-full border-0 font-semibold px-2.5 text-xs ${
@@ -145,7 +170,6 @@ export default function StudentManagement() {
                   </Badge>
                 </TableCell>
 
-                {/* Level */}
                 <TableCell className="py-4">
                   <Badge className="rounded-full border-0 font-semibold px-2.5 text-xs bg-[#A9F877] text-black">
                     {s.level}
@@ -156,7 +180,6 @@ export default function StudentManagement() {
                   {s.classesCompleted}
                 </TableCell>
 
-                {/* Actions */}
                 <TableCell className="py-4">
                   <div className="flex items-center gap-2">
                     <Button
@@ -167,6 +190,7 @@ export default function StudentManagement() {
                     >
                       <Eye size={14} /> View Details
                     </Button>
+
                     <Button
                       size="sm"
                       className="gap-1.5 bg-[#A9F877] hover:bg-[#C1FF72] text-black"
@@ -188,6 +212,7 @@ export default function StudentManagement() {
         open={detailOpen}
         onClose={() => setDetailOpen(false)}
       />
+
       <AddCreditsModal
         student={creditsStudent}
         open={creditsOpen}

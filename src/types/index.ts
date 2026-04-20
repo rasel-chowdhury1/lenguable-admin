@@ -41,6 +41,7 @@ export type Lesson = {
 export type Resource = {
   _id?: string;
   title: string;
+  url: string;
   type: string;
 };
 
@@ -53,6 +54,7 @@ export type LessonFormData = {
 
 export type ResourceFormData = {
   title: string;
+  url: string;
   type: string;
 };
 
