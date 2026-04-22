@@ -8,9 +8,12 @@ import { useGetMeQuery } from "@/redux/features/userApi";
 import { useLogoutMutation } from "@/redux/features/authApi";
 import { useRouter } from "next/navigation";
 import GoogleTranslate from "./shared/GoogleTranslate";
+import { useDispatch } from "react-redux";
+import { baseApi } from "@/redux/api/baseApi";
 
 const AppHeader = () => {
   const router = useRouter();
+  const dispatch = useDispatch();
   const { data } = useGetMeQuery(undefined);
   const [logout] = useLogoutMutation();
   const user = data?.data;
@@ -18,9 +21,12 @@ const AppHeader = () => {
   const handleLogout = async () => {
     try {
       await logout(undefined).unwrap();
-      router.push("/");
     } catch (err) {
       console.error("Logout failed:", err);
+    } finally {
+      dispatch(baseApi.util.resetApiState());
+      router.push("/");
+      router.refresh();
     }
   };
 

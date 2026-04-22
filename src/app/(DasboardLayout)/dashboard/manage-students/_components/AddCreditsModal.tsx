@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -8,8 +9,14 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { AddCreditsFormData, Student } from "@/types";
+import { Student } from "@/types";
 import { useForm } from "react-hook-form";
+import { useAddCreditsMutation } from "@/redux/features/studentApi";
+import { toast } from "sonner";
+
+type AddCreditsFormData = {
+  credits: number;
+};
 
 export function AddCreditsModal({
   student,
@@ -20,12 +27,31 @@ export function AddCreditsModal({
   open: boolean;
   onClose: () => void;
 }) {
-  const { register, handleSubmit, reset } = useForm<AddCreditsFormData>();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<AddCreditsFormData>();
+  const [addCredits, { isLoading }] = useAddCreditsMutation();
 
-  function onSubmit(data: AddCreditsFormData): void {
-    console.log("Add credits:", data);
-    reset();
-    onClose();
+  async function onSubmit(data: AddCreditsFormData) {
+    try {
+      await addCredits({
+        studentId: student?._id,
+        credits: Number(data.credits),
+      }).unwrap();
+
+      toast.success(
+        `${data.credits} credits added to ${student?.name}. New total: ${
+          (student?.credits ?? 0) + Number(data.credits)
+        }`,
+      );
+      reset();
+      onClose();
+    } catch (err: any) {
+      toast.error(err?.data?.message || "Failed to add credits");
+    }
   }
 
   if (!student) return null;
@@ -40,19 +66,37 @@ export function AddCreditsModal({
         </DialogHeader>
 
         <p className="text-sm text-gray-500 -mt-2 mb-2">
-          Add class credits to student account: {student.name}
+          Add class credits to:{" "}
+          <span className="font-medium text-gray-900">{student.name}</span>
         </p>
+
+        {/* Current credits */}
+        <div className="bg-gray-50 rounded-md px-4 py-2 text-sm text-gray-600">
+          Current credits:{" "}
+          <span className="font-semibold text-gray-900">
+            {student.credits ?? 0}
+          </span>
+        </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
             <Label className="mb-1 block text-sm font-medium">
-              Number of Credits
+              Number of Credits to Add
             </Label>
             <Input
               type="number"
               placeholder="Enter number of credits"
-              {...register("credits", { required: true, min: 1 })}
+              min={1}
+              {...register("credits", {
+                required: "Credits are required",
+                min: { value: 1, message: "Must be at least 1 credit" },
+              })}
             />
+            {errors.credits && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.credits.message}
+              </p>
+            )}
           </div>
 
           <DialogFooter className="pt-1">
@@ -61,9 +105,10 @@ export function AddCreditsModal({
             </Button>
             <Button
               type="submit"
+              disabled={isLoading}
               className="bg-[#A9F877] hover:bg-[#C1FF72] text-black"
             >
-              Add Credits
+              {isLoading ? "Adding..." : "Add Credits"}
             </Button>
           </DialogFooter>
         </form>
