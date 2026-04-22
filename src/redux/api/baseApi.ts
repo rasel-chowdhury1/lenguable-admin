@@ -9,3 +9,4 @@ export const baseApi = createApi({
   tagTypes: ["Auth", "User", "Lesson", "Resource", "Student"],
   endpoints: () => ({}),
 });
+ 
