@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Eye, Plus } from "lucide-react";
+import { AlertTriangle, Eye, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -137,71 +137,85 @@ export default function StudentManagement() {
           </TableHeader>
 
           <TableBody>
-            {students.map((s) => (
-              <TableRow
-                key={s._id}
-                className="border-b border-gray-100 last:border-0 hover:bg-gray-50/50"
-              >
-                {/* Avatar + Name */}
-                <TableCell className="pl-5 py-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-600 shrink-0">
-                      {getInitials(s.name)}
-                    </div>
-                    <span className="text-sm font-medium text-gray-900">
-                      {s.name}
-                    </span>
-                  </div>
-                </TableCell>
-
-                <TableCell className="text-sm text-gray-600 py-4">
-                  {s.email}
-                </TableCell>
-
-                <TableCell className="py-4">
-                  <Badge
-                    className={`rounded-full border-0 font-semibold px-2.5 text-xs ${
-                      s.credits === 0
-                        ? "bg-red-600 text-white"
-                        : "bg-[#C1FF72] text-black"
-                    }`}
-                  >
-                    {s.credits}
-                  </Badge>
-                </TableCell>
-
-                <TableCell className="py-4">
-                  <Badge className="rounded-full border-0 font-semibold px-2.5 text-xs bg-[#A9F877] text-black">
-                    {s.level}
-                  </Badge>
-                </TableCell>
-
-                <TableCell className="text-sm text-gray-800 py-4">
-                  {s.classesCompleted}
-                </TableCell>
-
-                <TableCell className="py-4">
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="gap-2"
-                      onClick={() => openDetail(s)}
-                    >
-                      <Eye size={14} /> View Details
-                    </Button>
-
-                    <Button
-                      size="sm"
-                      className="gap-1.5 bg-[#A9F877] hover:bg-[#C1FF72] text-black"
-                      onClick={() => openCredits(s)}
-                    >
-                      <Plus size={14} /> Add Credits
-                    </Button>
+            {students.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={6}
+                  className="text-center py-10 text-gray-500"
+                >
+                  <div className="flex flex-col items-center gap-2">
+                    <AlertTriangle size={30} className="text-gray-400" />
+                    <p>No students found</p>
                   </div>
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              students.map((s) => (
+                <TableRow
+                  key={s._id}
+                  className="border-b border-gray-100 last:border-0 hover:bg-gray-50/50"
+                >
+                  {/* Avatar + Name */}
+                  <TableCell className="pl-5 py-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-600 shrink-0">
+                        {getInitials(s.name)}
+                      </div>
+                      <span className="text-sm font-medium text-gray-900">
+                        {s.name}
+                      </span>
+                    </div>
+                  </TableCell>
+
+                  <TableCell className="text-sm text-gray-600 py-4">
+                    {s.email}
+                  </TableCell>
+
+                  <TableCell className="py-4">
+                    <Badge
+                      className={`rounded-full border-0 font-semibold px-2.5 text-xs ${
+                        s.credits === 0
+                          ? "bg-red-600 text-white"
+                          : "bg-[#C1FF72] text-black"
+                      }`}
+                    >
+                      {s.credits}
+                    </Badge>
+                  </TableCell>
+
+                  <TableCell className="py-4">
+                    <Badge className="rounded-full border-0 font-semibold px-2.5 text-xs bg-[#A9F877] text-black">
+                      {s.level}
+                    </Badge>
+                  </TableCell>
+
+                  <TableCell className="text-sm text-gray-800 py-4">
+                    {s.classesCompleted}
+                  </TableCell>
+
+                  <TableCell className="py-4">
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="gap-2"
+                        onClick={() => openDetail(s)}
+                      >
+                        <Eye size={14} /> View Details
+                      </Button>
+
+                      <Button
+                        size="sm"
+                        className="gap-1.5 bg-[#A9F877] hover:bg-[#C1FF72] text-black"
+                        onClick={() => openCredits(s)}
+                      >
+                        <Plus size={14} /> Add Credits
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>

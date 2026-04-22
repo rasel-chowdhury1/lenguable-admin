@@ -11,7 +11,7 @@ const announcementApi = baseApi.injectEndpoints({
 
     createAnnouncement: builder.mutation({
       query: (data) => ({
-        url: "/announcements",
+        url: "/announcement",
         method: "POST",
         body: data,
       }),

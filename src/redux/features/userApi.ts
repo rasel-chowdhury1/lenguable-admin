@@ -8,7 +8,7 @@ export const userApi = baseApi.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["User"],
+      invalidatesTags: ["Teacher"],
     }),
 
     getMe: build.query({
