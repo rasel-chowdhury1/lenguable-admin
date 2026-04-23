@@ -1,4 +1,5 @@
 import CTA from "./_components/CTA";
+import CTA2 from "./_components/CTA2";
 import FAQ from "./_components/FAQ";
 import Hero from "./_components/Hero";
 import HowItWork from "./_components/HowItWorks";
@@ -14,6 +15,7 @@ const page = () => {
       <OurStory />
       <FAQ />
       <CTA />
+      <CTA2 />
     </div>
   );
 };
