@@ -1,7 +1,5 @@
 "use client";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { useState } from "react";
 import { Loader2, Pencil, Trash2, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
