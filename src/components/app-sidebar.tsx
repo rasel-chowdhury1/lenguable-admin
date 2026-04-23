@@ -10,6 +10,7 @@ import {
   // List,
   DollarSign,
   Package,
+  LayoutDashboard,
 } from "lucide-react";
 
 import { NavItems } from "@/components/nav-items";
@@ -42,10 +43,15 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
       icon: Users,
     },
     {
-      title: "Hero",
-      url: "/dashboard/hero",
-      icon: BookOpen,
+      title: "Landing Page",
+      url: "/dashboard/landing-page",
+      icon: LayoutDashboard,
     },
+    // {
+    //   title: "Hero",
+    //   url: "/dashboard/hero",
+    //   icon: BookOpen,
+    // },
     // {
     //   title: "Teacher Schedules",
     //   url: "/dashboard/teacher-schedules",

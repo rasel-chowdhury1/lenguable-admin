@@ -125,7 +125,7 @@ const FormFields = ({
   </div>
 );
 
-export default function HeroPage() {
+export default function Hero() {
   const { data, isLoading } = useGetHeroQuery(undefined);
   const [createHero, { isLoading: isCreating }] = useCreateHeroMutation();
   const [updateHero, { isLoading: isUpdating }] = useUpdateHeroMutation();
