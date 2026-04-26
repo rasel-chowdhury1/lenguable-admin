@@ -114,20 +114,36 @@ export default function ManagePricingPage() {
 
                 <div className="mb-1">
                   <div className="flex items-baseline gap-2 flex-wrap">
-                    <span className="text-4xl font-extrabold text-foreground tracking-tight">
-                      ${pkg.price}
-                    </span>
+                    {pkg.discount ? (
+                      <>
+                        {/* Discounted current price */}
+                        <span className="text-4xl font-extrabold text-foreground tracking-tight">
+                          $
+                          {(
+                            pkg.price -
+                            (pkg.price * pkg.discount) / 100
+                          ).toFixed(2)}
+                        </span>
+                        {/* Original price crossed out */}
+                        <span className="text-lg text-muted-foreground line-through">
+                          ${pkg.price}
+                        </span>
+                        {/* Discount badge */}
+                        <span className="text-xs font-semibold bg-orange-400/10 text-orange-400 px-2 py-0.5 rounded-full">
+                          {pkg.discount}% off
+                        </span>
+                      </>
+                    ) : (
+                      <span className="text-4xl font-extrabold text-foreground tracking-tight">
+                        ${pkg.price}
+                      </span>
+                    )}
                     {pkg.perClassPrice && (
                       <span className="text-sm text-muted-foreground font-medium">
                         (${pkg.perClassPrice.toFixed(2)} per class)
                       </span>
                     )}
                   </div>
-                  {pkg.discount && (
-                    <p className="text-sm font-semibold text-orange-400 mt-1">
-                      {pkg.discount}% off
-                    </p>
-                  )}
                   <p className="text-sm font-semibold text-[#A9F877] mt-1">
                     {pkg.credits} Credit
                   </p>
