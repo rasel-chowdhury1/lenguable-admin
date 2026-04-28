@@ -137,7 +137,7 @@ const PackageModal = ({
             </div>
 
             <div className="space-y-1.5">
-              <Label>Per Class ($)</Label>
+              <Label>Credit Per Class</Label>
               <Input
                 type="number"
                 min={0}

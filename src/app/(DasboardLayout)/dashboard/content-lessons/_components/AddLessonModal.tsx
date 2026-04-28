@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -18,7 +19,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { Lesson, LessonFormData } from "@/types";
 import { useForm } from "react-hook-form";
 import {
@@ -26,6 +26,7 @@ import {
   useUpdateLessonMutation,
 } from "@/redux/features/LessonApi";
 import { toast } from "sonner";
+import { FileText, X, Upload } from "lucide-react";
 
 type Props = {
   open: boolean;
@@ -35,36 +36,106 @@ type Props = {
 
 const AddLessonModal = ({ open, onClose, lesson }: Props) => {
   const { register, handleSubmit, reset, setValue } = useForm<LessonFormData>();
-
   const [createLesson] = useCreateLessonMutation();
   const [updateLesson] = useUpdateLessonMutation();
+  const [exerciseList, setExerciseList] = useState<string[]>([""]);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [existingFileName, setExistingFileName] = useState<string>("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Prefill form when editing
   useEffect(() => {
     if (lesson) {
       setValue("title", lesson.title);
       setValue("level", lesson.level);
-      setValue("content", lesson.content);
-      setValue("exercises", lesson.exercises);
+      setExerciseList(
+        Array.isArray(lesson.exercises) && lesson.exercises.length > 0
+          ? lesson.exercises
+          : [""],
+      );
+      // Show existing file name if available
+      if (lesson.file) {
+        const parts = lesson.file.split("/");
+        setExistingFileName(parts[parts.length - 1]);
+      }
     } else {
       reset();
+      setExerciseList([""]);
+      setSelectedFile(null);
+      setExistingFileName("");
     }
   }, [lesson, setValue, reset]);
 
+  const handleExerciseChange = (index: number, value: string) => {
+    const updated = [...exerciseList];
+    updated[index] = value;
+    setExerciseList(updated);
+  };
+
+  const addExercise = () => setExerciseList([...exerciseList, ""]);
+
+  const removeExercise = (index: number) => {
+    setExerciseList(exerciseList.filter((_, i) => i !== index));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.type !== "application/pdf") {
+      toast.error("Only PDF files are allowed");
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("File size must be less than 10MB");
+      return;
+    }
+
+    setSelectedFile(file);
+    setExistingFileName("");
+  };
+
+  const removeFile = () => {
+    setSelectedFile(null);
+    setExistingFileName("");
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
   const onSubmit = async (data: LessonFormData) => {
     try {
+      // Build FormData — matches your Postman structure
+      const formData = new FormData();
+      formData.append(
+        "data",
+        JSON.stringify({
+          ...data,
+          exercises: exerciseList.filter((ex) => ex.trim() !== ""),
+        }),
+      );
+
+      if (selectedFile) {
+        formData.append("file", selectedFile);
+      }
+
       if (lesson?._id) {
-        const res = await updateLesson({ id: lesson._id, data }).unwrap();
-        toast.success(res?.message || "Lesson updated successfully !");
+        const res = await updateLesson({
+          id: lesson._id,
+          data: formData,
+        }).unwrap();
+        toast.success(res?.message || "Lesson updated successfully!");
       } else {
-        const res = await createLesson(data).unwrap();
-        toast.success(res?.message || "Lesson created successfully !");
+        const res = await createLesson(formData).unwrap();
+        toast.success(res?.message || "Lesson created successfully!");
       }
 
       reset();
+      setExerciseList([""]);
+      setSelectedFile(null);
+      setExistingFileName("");
       onClose();
     } catch (error) {
       console.error("Lesson error:", error);
+      toast.error("Something went wrong. Please try again.");
     }
   };
 
@@ -86,7 +157,6 @@ const AddLessonModal = ({ open, onClose, lesson }: Props) => {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Label className="mb-1 block text-sm font-medium">Level</Label>
-
               <Select
                 defaultValue={lesson?.level}
                 onValueChange={(val) => setValue("level", val)}
@@ -94,7 +164,6 @@ const AddLessonModal = ({ open, onClose, lesson }: Props) => {
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select Level" />
                 </SelectTrigger>
-
                 <SelectContent>
                   {["A0", "A1", "A2", "B1", "B2", "C1"].map((l) => (
                     <SelectItem key={l} value={l}>
@@ -107,7 +176,6 @@ const AddLessonModal = ({ open, onClose, lesson }: Props) => {
 
             <div>
               <Label className="mb-1 block text-sm font-medium">Title</Label>
-
               <Input
                 {...register("title", { required: true })}
                 placeholder="e.g., Present Simple"
@@ -115,37 +183,88 @@ const AddLessonModal = ({ open, onClose, lesson }: Props) => {
             </div>
           </div>
 
-          {/* Content */}
+          {/* PDF Upload */}
           <div>
-            <Label className="mb-1 block text-sm font-medium">
-              Lesson Content
-            </Label>
+            <Label className="mb-1 block text-sm font-medium">Lesson PDF</Label>
 
-            <Textarea
-              {...register("content")}
-              placeholder="Enter lesson content..."
-              className="resize-none"
+            {/* Show selected or existing file */}
+            {selectedFile || existingFileName ? (
+              <div className="flex items-center gap-2 p-3 border rounded-lg bg-muted/40">
+                <FileText className="w-5 h-5 text-red-500 shrink-0" />
+                <span className="text-sm flex-1 truncate">
+                  {selectedFile ? selectedFile.name : existingFileName}
+                </span>
+                <button
+                  type="button"
+                  onClick={removeFile}
+                  className="text-muted-foreground hover:text-destructive transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                className="border-2 border-dashed border-border rounded-lg p-6 text-center cursor-pointer hover:border-[#A9F877] hover:bg-[#A9F877]/5 transition-colors"
+              >
+                <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
+                <p className="text-sm font-medium text-foreground">
+                  Click to upload PDF
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  PDF only, max 10MB
+                </p>
+              </div>
+            )}
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".pdf,application/pdf"
+              onChange={handleFileChange}
+              className="hidden"
             />
           </div>
 
-          {/* Exercises */}
+          {/* Dynamic Exercises */}
           <div>
             <Label className="mb-1 block text-sm font-medium">
               Practice Exercises
             </Label>
-
-            <Textarea
-              {...register("exercises")}
-              placeholder="Enter practice exercises..."
-              className="resize-none"
-            />
+            <div className="space-y-2">
+              {exerciseList.map((ex, index) => (
+                <div key={index} className="flex gap-2">
+                  <Input
+                    value={ex}
+                    onChange={(e) =>
+                      handleExerciseChange(index, e.target.value)
+                    }
+                    placeholder={`Exercise ${index + 1}`}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => removeExercise(index)}
+                  >
+                    Remove
+                  </Button>
+                </div>
+              ))}
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={addExercise}
+              className="mt-2"
+            >
+              + Add Exercise
+            </Button>
           </div>
 
           <DialogFooter className="pt-1">
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
-
             <Button
               type="submit"
               className="bg-[#A9F877] hover:bg-[#C1FF72] text-black"

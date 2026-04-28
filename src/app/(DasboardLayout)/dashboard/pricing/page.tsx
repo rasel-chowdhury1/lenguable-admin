@@ -140,7 +140,7 @@ export default function ManagePricingPage() {
                     )}
                     {pkg.perClassPrice && (
                       <span className="text-sm text-muted-foreground font-medium">
-                        (${pkg.perClassPrice.toFixed(2)} per class)
+                        ({pkg.perClassPrice.toFixed(0)} credit per class)
                       </span>
                     )}
                   </div>

@@ -34,8 +34,8 @@ export type Lesson = {
   _id?: string;
   level: string;
   title: string;
-  content: string;
-  exercises: string;
+  exercises: string[];
+  file?: string;
 };
 
 export type Resource = {
@@ -48,8 +48,8 @@ export type Resource = {
 export type LessonFormData = {
   level: string;
   title: string;
-  content: string;
-  exercises: string;
+  exercises: string[];
+  file?: string;
 };
 
 export type ResourceFormData = {

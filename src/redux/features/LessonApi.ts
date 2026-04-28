@@ -19,23 +19,23 @@ export const lessonApi = baseApi.injectEndpoints({
       }),
       providesTags: ["Lesson"],
     }),
-
-    // CREATE LESSON
+    
     createLesson: builder.mutation({
       query: (data) => ({
         url: "/lesson",
         method: "POST",
-        body: data,
+        body: data, // FormData passed directly
+        formData: true,
       }),
       invalidatesTags: ["Lesson"],
     }),
 
-    // UPDATE LESSON
     updateLesson: builder.mutation({
       query: ({ id, data }) => ({
         url: `/lesson/${id}`,
         method: "PATCH",
-        body: data,
+        body: data, // FormData passed directly
+        formData: true,
       }),
       invalidatesTags: ["Lesson"],
     }),
