@@ -31,7 +31,7 @@ export type PackageFormValues = {
 };
 
 export type Lesson = {
-  _id?: string;
+  _id: string;
   level: string;
   title: string;
   exercises: string[];
@@ -39,7 +39,7 @@ export type Lesson = {
 };
 
 export type Resource = {
-  _id?: string;
+  _id: string;
   title: string;
   url: string;
   type: string;

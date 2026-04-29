@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Loader2, Pencil, Trash2, Plus } from "lucide-react";
+import { Loader2, Pencil, Trash2, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -35,7 +35,7 @@ interface IFAQ {
 }
 
 export default function FAQ() {
-  const { data, isLoading } = useGetAllFAQQuery(undefined);
+  const { data, isLoading, refetch } = useGetAllFAQQuery(undefined);
 
   const [createFAQ, { isLoading: isCreating }] = useCreateFAQMutation();
   const [updateFAQ, { isLoading: isUpdating }] = useUpdateFAQMutation();
@@ -48,7 +48,6 @@ export default function FAQ() {
 
   const [sectionTitle, setSectionTitle] = useState("");
   const [sectionSubtitle, setSectionSubtitle] = useState("");
-
   const [faqItems, setFaqItems] = useState<IFaqItem[]>([
     { question: "", answer: "" },
   ]);
@@ -60,14 +59,55 @@ export default function FAQ() {
     { question: "", answer: "" },
   ]);
 
+  // CREATE FUNCTIONS
   const addFaq = () => {
     setFaqItems([...faqItems, { question: "", answer: "" }]);
   };
 
-  const updateFaqItem = (index: number, field: string, value: string) => {
+  const removeFaq = (index: number) => {
+    setFaqItems(faqItems.filter((_, i) => i !== index));
+  };
+
+  const updateFaqItem = (
+    index: number,
+    field: keyof IFaqItem,
+    value: string,
+  ) => {
     const updated = [...faqItems];
-    updated[index][field as keyof IFaqItem] = value;
+    updated[index][field] = value;
     setFaqItems(updated);
+  };
+
+  // EDIT FUNCTIONS
+  const addEditFaq = () => {
+    setEditFaqItems([...editFaqItems, { question: "", answer: "" }]);
+  };
+
+  const removeEditFaq = (index: number) => {
+    setEditFaqItems(editFaqItems.filter((_, i) => i !== index));
+  };
+
+  const updateEditFaqItem = (
+    index: number,
+    field: keyof IFaqItem,
+    value: string,
+  ) => {
+    const updated = [...editFaqItems];
+    updated[index][field] = value;
+    setEditFaqItems(updated);
+  };
+
+  const resetCreateForm = () => {
+    setSectionTitle("");
+    setSectionSubtitle("");
+    setFaqItems([{ question: "", answer: "" }]);
+  };
+
+  const resetEditForm = () => {
+    setEditId("");
+    setEditTitle("");
+    setEditSubtitle("");
+    setEditFaqItems([{ question: "", answer: "" }]);
   };
 
   const handleCreate = async () => {
@@ -78,8 +118,10 @@ export default function FAQ() {
         faqs: faqItems,
       }).unwrap();
 
-      toast.success("FAQ created");
+      toast.success("FAQ created successfully");
+      resetCreateForm();
       setOpen(false);
+      refetch();
     } catch {
       toast.error("Failed to create FAQ");
     }
@@ -104,8 +146,10 @@ export default function FAQ() {
         },
       }).unwrap();
 
-      toast.success("FAQ updated");
+      toast.success("FAQ updated successfully");
+      resetEditForm();
       setEditOpen(false);
+      refetch();
     } catch {
       toast.error("Update failed");
     }
@@ -114,7 +158,8 @@ export default function FAQ() {
   const handleDelete = async (id: string) => {
     try {
       await deleteFAQ(id).unwrap();
-      toast.success("Deleted");
+      toast.success("Deleted successfully");
+      refetch();
     } catch {
       toast.error("Delete failed");
     }
@@ -133,12 +178,10 @@ export default function FAQ() {
       <div className="flex justify-between mb-6">
         <h1 className="text-2xl font-bold">FAQ</h1>
 
-        {!faqs && (
-          <Button onClick={() => setOpen(true)}>
-            <Plus className="w-4 h-4 mr-2" />
-            Add FAQ
-          </Button>
-        )}
+        <Button onClick={() => setOpen(true)}>
+          <Plus className="w-4 h-4 mr-2" />
+          Add FAQ
+        </Button>
       </div>
 
       <div className="space-y-4">
@@ -152,7 +195,7 @@ export default function FAQ() {
                     {item.sectionSubtitle}
                   </p>
 
-                  <div className="mt-3 space-y-2">
+                  <div className="mt-3 space-y-3">
                     {item.faqs.map((f, i) => (
                       <div key={i}>
                         <p className="font-medium">{f.question}</p>
@@ -189,40 +232,52 @@ export default function FAQ() {
 
       {/* CREATE MODAL */}
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
+        <DialogContent className="max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Create FAQ</DialogTitle>
           </DialogHeader>
 
           <Input
-            placeholder="Title"
+            placeholder="Section Title"
             value={sectionTitle}
             onChange={(e) => setSectionTitle(e.target.value)}
           />
 
           <Input
-            placeholder="Subtitle"
+            placeholder="Section Subtitle"
             value={sectionSubtitle}
             onChange={(e) => setSectionSubtitle(e.target.value)}
           />
 
           {faqItems.map((f, i) => (
-            <div key={i} className="space-y-2">
+            <div key={i} className="space-y-2 border p-3 rounded-md">
               <Input
                 placeholder="Question"
                 value={f.question}
                 onChange={(e) => updateFaqItem(i, "question", e.target.value)}
               />
+
               <Textarea
                 placeholder="Answer"
                 value={f.answer}
                 onChange={(e) => updateFaqItem(i, "answer", e.target.value)}
               />
+
+              {faqItems.length > 1 && (
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => removeFaq(i)}
+                >
+                  <X className="w-4 h-4 mr-1" />
+                  Remove
+                </Button>
+              )}
             </div>
           ))}
 
           <Button variant="outline" onClick={addFaq}>
-            Add FAQ
+            Add More FAQ
           </Button>
 
           <DialogFooter>
@@ -235,45 +290,59 @@ export default function FAQ() {
 
       {/* EDIT MODAL */}
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
-        <DialogContent>
+        <DialogContent className="max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit FAQ</DialogTitle>
           </DialogHeader>
 
           <Input
+            placeholder="Section Title"
             value={editTitle}
             onChange={(e) => setEditTitle(e.target.value)}
           />
 
           <Input
+            placeholder="Section Subtitle"
             value={editSubtitle}
             onChange={(e) => setEditSubtitle(e.target.value)}
           />
 
           {editFaqItems.map((f, i) => (
-            <div key={i} className="space-y-2">
+            <div key={i} className="space-y-2 border p-3 rounded-md">
               <Input
+                placeholder="Question"
                 value={f.question}
-                onChange={(e) => {
-                  const updated = [...editFaqItems];
-                  updated[i].question = e.target.value;
-                  setEditFaqItems(updated);
-                }}
+                onChange={(e) =>
+                  updateEditFaqItem(i, "question", e.target.value)
+                }
               />
+
               <Textarea
+                placeholder="Answer"
                 value={f.answer}
-                onChange={(e) => {
-                  const updated = [...editFaqItems];
-                  updated[i].answer = e.target.value;
-                  setEditFaqItems(updated);
-                }}
+                onChange={(e) => updateEditFaqItem(i, "answer", e.target.value)}
               />
+
+              {editFaqItems.length > 1 && (
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => removeEditFaq(i)}
+                >
+                  <X className="w-4 h-4 mr-1" />
+                  Remove
+                </Button>
+              )}
             </div>
           ))}
 
+          <Button variant="outline" onClick={addEditFaq}>
+            Add More FAQ
+          </Button>
+
           <DialogFooter>
             <Button onClick={handleUpdate} disabled={isUpdating}>
-              Save
+              {isUpdating ? <Loader2 className="animate-spin" /> : "Save"}
             </Button>
           </DialogFooter>
         </DialogContent>
