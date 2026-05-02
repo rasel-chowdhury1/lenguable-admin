@@ -34,6 +34,13 @@ type Props = {
   lesson?: Lesson | null;
 };
 
+// Helper to get a short display name
+const getShortFileName = (name: string) => {
+  if (name.length <= 20) return name;
+  const ext = name.split(".").pop();
+  return name.substring(0, 20) + "..." + ext;
+};
+
 const AddLessonModal = ({ open, onClose, lesson }: Props) => {
   const { register, handleSubmit, reset, setValue } = useForm<LessonFormData>();
   const [createLesson] = useCreateLessonMutation();
@@ -52,18 +59,20 @@ const AddLessonModal = ({ open, onClose, lesson }: Props) => {
           ? lesson.exercises
           : [""],
       );
-      // Show existing file name if available
       if (lesson.file) {
         const parts = lesson.file.split("/");
         setExistingFileName(parts[parts.length - 1]);
+      } else {
+        setExistingFileName(""); // ✅ Clear if no file
       }
+      setSelectedFile(null); // ✅ Always clear selected file on edit open
     } else {
       reset();
       setExerciseList([""]);
       setSelectedFile(null);
       setExistingFileName("");
     }
-  }, [lesson, setValue, reset]);
+  }, [lesson, setValue, reset, open]); // ✅ Add `open` as dependency
 
   const handleExerciseChange = (index: number, value: string) => {
     const updated = [...exerciseList];
@@ -158,7 +167,7 @@ const AddLessonModal = ({ open, onClose, lesson }: Props) => {
             <div>
               <Label className="mb-1 block text-sm font-medium">Level</Label>
               <Select
-                defaultValue={lesson?.level}
+                value={lesson?.level || ""}
                 onValueChange={(val) => setValue("level", val)}
               >
                 <SelectTrigger className="w-full">
@@ -192,7 +201,9 @@ const AddLessonModal = ({ open, onClose, lesson }: Props) => {
               <div className="flex items-center gap-2 p-3 border rounded-lg bg-muted/40">
                 <FileText className="w-5 h-5 text-red-500 shrink-0" />
                 <span className="text-sm flex-1 truncate">
-                  {selectedFile ? selectedFile.name : existingFileName}
+                  {selectedFile
+                    ? getShortFileName(selectedFile.name)
+                    : getShortFileName(existingFileName)}
                 </span>
                 <button
                   type="button"
