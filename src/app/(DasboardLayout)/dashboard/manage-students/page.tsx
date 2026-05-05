@@ -49,8 +49,8 @@ export default function StudentManagement() {
   // SEARCH STATE
   const [searchTerm, setSearchTerm] = useState("");
 
-  const student = data?.data || [];
-  console.log(student, "from student management ==>");
+  // const student = data?.data || [];
+  // console.log(student, "from student management ==>");
 
   // Process API data + search filter
   const students: Student[] = useMemo(() => {

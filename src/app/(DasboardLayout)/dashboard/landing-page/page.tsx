@@ -1,3 +1,4 @@
+import About from "./_components/About";
 import CTA from "./_components/CTA";
 import CTA2 from "./_components/CTA2";
 import FAQ from "./_components/FAQ";
@@ -16,6 +17,7 @@ const page = () => {
       <FAQ />
       <CTA />
       <CTA2 />
+      <About />
     </div>
   );
 };

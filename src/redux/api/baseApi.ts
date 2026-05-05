@@ -21,6 +21,7 @@ export const baseApi = createApi({
     "CTA",
     "CTA2",
     "DiscountCode",
+    "About",
   ],
   endpoints: () => ({}),
 });

@@ -30,7 +30,7 @@ export default function CTA2() {
   const [deleteCTA2] = useDeleteCTA2Mutation();
 
   const ctaList = data?.data || [];
-  console.log(ctaList, "Cta2 ==>");
+  // console.log(ctaList, "Cta2 ==>");
 
   // CREATE STATE
   const [open, setOpen] = useState(false);
