@@ -19,13 +19,22 @@ export const lessonApi = baseApi.injectEndpoints({
       }),
       providesTags: ["Lesson"],
     }),
-    
+
     createLesson: builder.mutation({
       query: (data) => ({
         url: "/lesson",
         method: "POST",
         body: data, // FormData passed directly
         formData: true,
+      }),
+      invalidatesTags: ["Lesson"],
+    }),
+
+    reorderLessons: builder.mutation<void, string[]>({
+      query: (orderedIds) => ({
+        url: "/lesson/reorder",
+        method: "PATCH",
+        body: { orderedIds },
       }),
       invalidatesTags: ["Lesson"],
     }),
@@ -57,6 +66,7 @@ export const {
   useGetAllLessonsQuery,
   useGetSingleLessonQuery,
   useCreateLessonMutation,
+  useReorderLessonsMutation,
   useUpdateLessonMutation,
   useDeleteLessonMutation,
 } = lessonApi;
