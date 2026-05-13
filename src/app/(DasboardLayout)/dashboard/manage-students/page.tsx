@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { AlertTriangle, Eye, Plus } from "lucide-react";
+import { AlertTriangle, Eye, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -13,13 +13,26 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Student } from "@/types";
 import { DetailModal } from "./_components/DetailModal";
 import { AddCreditsModal } from "./_components/AddCreditsModal";
 import { getInitials } from "@/utils";
-import { useGetStudentQuery } from "@/redux/features/studentApi";
+import {
+  useGetStudentQuery,
+  useDeleteStudentMutation,
+} from "@/redux/features/studentApi";
+import { toast } from "sonner";
 
-// Helper: get current level based on unlockedLessons
 const getCurrentLevel = (unlockedCount: number) => {
   if (unlockedCount === 1) return "A0";
   if (unlockedCount === 2) return "A1";
@@ -30,7 +43,6 @@ const getCurrentLevel = (unlockedCount: number) => {
   return "A0";
 };
 
-// Helper: count completed classes based on bookings
 const getCompletedClasses = (bookings: Student["booking"] = []) => {
   const now = new Date();
   return bookings.filter(
@@ -40,19 +52,15 @@ const getCompletedClasses = (bookings: Student["booking"] = []) => {
 
 export default function StudentManagement() {
   const { data, isLoading } = useGetStudentQuery(undefined);
+  const [deleteStudent, { isLoading: isDeleting }] = useDeleteStudentMutation();
 
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [creditsStudent, setCreditsStudent] = useState<Student | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
   const [creditsOpen, setCreditsOpen] = useState(false);
-
-  // SEARCH STATE
+  const [deleteId, setDeleteId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // const student = data?.data || [];
-  // console.log(student, "from student management ==>");
-
-  // Process API data + search filter
   const students: Student[] = useMemo(() => {
     if (!data?.data) return [];
 
@@ -72,13 +80,24 @@ export default function StudentManagement() {
       }))
       .filter((s: Student) => {
         const keyword = searchTerm.toLowerCase();
-
         return (
           s.name?.toLowerCase().includes(keyword) ||
           s.email?.toLowerCase().includes(keyword)
         );
       });
   }, [data, searchTerm]);
+
+  const handleConfirmDelete = async () => {
+    if (!deleteId) return;
+    try {
+      await deleteStudent(deleteId).unwrap();
+      toast.success("Student deleted successfully");
+    } catch {
+      toast.error("Failed to delete student");
+    } finally {
+      setDeleteId(null);
+    }
+  };
 
   function openDetail(student: Student): void {
     setSelectedStudent(student);
@@ -97,8 +116,6 @@ export default function StudentManagement() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Student Management</h1>
-
-        {/* SEARCH INPUT */}
         <div className="mb-4 w-96">
           <input
             type="text"
@@ -155,7 +172,6 @@ export default function StudentManagement() {
                   key={s._id}
                   className="border-b border-gray-100 last:border-0 hover:bg-gray-50/50"
                 >
-                  {/* Avatar + Name */}
                   <TableCell className="pl-5 py-4">
                     <div className="flex items-center gap-3">
                       <div className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-600 shrink-0">
@@ -203,13 +219,19 @@ export default function StudentManagement() {
                       >
                         <Eye size={14} /> View Details
                       </Button>
-
                       <Button
                         size="sm"
                         className="gap-1.5 bg-[#A9F877] hover:bg-[#C1FF72] text-black"
                         onClick={() => openCredits(s)}
                       >
                         <Plus size={14} /> Add Credits
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => setDeleteId(s._id)}
+                      >
+                        <Trash2 size={14} />
                       </Button>
                     </div>
                   </TableCell>
@@ -226,12 +248,36 @@ export default function StudentManagement() {
         open={detailOpen}
         onClose={() => setDetailOpen(false)}
       />
-
       <AddCreditsModal
         student={creditsStudent}
         open={creditsOpen}
         onClose={() => setCreditsOpen(false)}
       />
+
+      {/* Delete Confirm Dialog */}
+      <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Student</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this student? This action cannot
+              be undone and will also remove their user account.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setDeleteId(null)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive hover:bg-destructive/90"
+              onClick={handleConfirmDelete}
+              disabled={isDeleting}
+            >
+              {isDeleting ? "Deleting..." : "Yes, Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

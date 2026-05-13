@@ -7,9 +7,16 @@ export const teacherApi = baseApi.injectEndpoints({
         url: "/teacher",
         method: "GET",
       }),
-       providesTags: ["Teacher"],
+      providesTags: ["Teacher"],
+    }),
+    deleteTeacher: build.mutation({
+      query: (id: string) => ({
+        url: `/teacher/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Teacher"],
     }),
   }),
 });
 
-export const { useGetTeacherQuery } = teacherApi;
+export const { useGetTeacherQuery, useDeleteTeacherMutation } = teacherApi;

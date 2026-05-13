@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Eye, AlertTriangle } from "lucide-react";
+import { Plus, Eye, AlertTriangle, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -15,39 +15,63 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+
 import AddTeacherModal from "./_components/AddTeacherModal";
 import TeacherDetailModal from "./_components/TeacherDetailModal";
 
 import { Teacher } from "@/types";
 import { getInitials } from "@/utils";
 
-import { useGetTeacherQuery } from "@/redux/features/teacherApi";
+import {
+  useGetTeacherQuery,
+  useDeleteTeacherMutation,
+} from "@/redux/features/teacherApi";
+import { toast } from "sonner";
 
 export default function TeacherManagement() {
   const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(null);
   const [addOpen, setAddOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const { data, isLoading, isError } = useGetTeacherQuery(undefined);
+  const [deleteTeacher, { isLoading: isDeleting }] = useDeleteTeacherMutation();
 
   const teachers: Teacher[] = data?.data || [];
-  // console.log(teachers, "From teacher management ==>");
 
-  if (isLoading) {
+  const handleConfirmDelete = async () => {
+    if (!deleteId) return;
+    try {
+      await deleteTeacher(deleteId).unwrap();
+      toast.success("Teacher deleted successfully");
+    } catch {
+      toast.error("Failed to delete teacher");
+    } finally {
+      setDeleteId(null);
+    }
+  };
+
+  if (isLoading)
     return <p className="text-center mt-10">Loading teachers...</p>;
-  }
-
-  if (isError) {
+  if (isError)
     return (
       <p className="text-center mt-10 text-red-500">Failed to load teachers</p>
     );
-  }
 
   return (
     <div className="max-w-6xl mx-auto p-5 my-10">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Teacher Management</h1>
-
         <Button
           onClick={() => setAddOpen(true)}
           className="bg-[#A9F877] hover:bg-[#C1FF72] text-black"
@@ -99,7 +123,6 @@ export default function TeacherManagement() {
                   key={t._id}
                   className="border-b border-gray-100 last:border-0 hover:bg-gray-50/50"
                 >
-                  {/* Avatar + Name */}
                   <TableCell className="pl-5 py-4">
                     <div className="flex items-center gap-3">
                       <div className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-600">
@@ -112,15 +135,12 @@ export default function TeacherManagement() {
                   <TableCell className="text-sm text-gray-600 py-4">
                     {t.email}
                   </TableCell>
-
                   <TableCell className="text-sm text-gray-800 py-4">
                     {t.totalClasses}
                   </TableCell>
-
                   <TableCell className="text-sm text-gray-800 py-4">
                     {t.totalClasses}
                   </TableCell>
-
                   <TableCell className="text-sm font-bold text-gray-900 py-4">
                     ${t.totalEarnings}
                   </TableCell>
@@ -138,14 +158,23 @@ export default function TeacherManagement() {
                   </TableCell>
 
                   <TableCell className="py-4">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="gap-2"
-                      onClick={() => setSelectedTeacher(t)}
-                    >
-                      <Eye size={14} /> View Details
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="gap-2"
+                        onClick={() => setSelectedTeacher(t)}
+                      >
+                        <Eye size={14} /> View Details
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => setDeleteId(t._id)}
+                      >
+                        <Trash2 size={14} />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))
@@ -155,14 +184,37 @@ export default function TeacherManagement() {
       </div>
 
       {/* Modals */}
-
       <TeacherDetailModal
         teacher={selectedTeacher}
         open={!!selectedTeacher}
         onClose={() => setSelectedTeacher(null)}
       />
-
       <AddTeacherModal open={addOpen} onClose={() => setAddOpen(false)} />
+
+      {/* Delete Confirm Dialog */}
+      <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Teacher</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this teacher? This action cannot
+              be undone and will also remove their user account.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setDeleteId(null)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive hover:bg-destructive/90"
+              onClick={handleConfirmDelete}
+              disabled={isDeleting}
+            >
+              {isDeleting ? "Deleting..." : "Yes, Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

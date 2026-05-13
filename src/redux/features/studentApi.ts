@@ -18,7 +18,15 @@ export const studentApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Student"],
     }),
+
+    deleteStudent: build.mutation({
+      query: (id: string) => ({
+        url: `/student/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Student"],
+    }),
   }),
 });
 
-export const { useGetStudentQuery, useAddCreditsMutation } = studentApi;
+export const { useGetStudentQuery, useAddCreditsMutation, useDeleteStudentMutation } = studentApi;

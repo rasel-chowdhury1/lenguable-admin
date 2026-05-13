@@ -270,7 +270,7 @@ export default function OurStory() {
 
       {/* CREATE MODAL */}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-        <DialogContent>
+        <DialogContent className="overflow-y-auto max-h-[80vh]">
           <DialogHeader>
             <DialogTitle>Create Our Story</DialogTitle>
           </DialogHeader>
@@ -311,7 +311,7 @@ export default function OurStory() {
 
       {/* EDIT MODAL */}
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
-        <DialogContent>
+       <DialogContent className="overflow-y-auto max-h-[80vh]">
           <DialogHeader>
             <DialogTitle>Edit Our Story</DialogTitle>
           </DialogHeader>
