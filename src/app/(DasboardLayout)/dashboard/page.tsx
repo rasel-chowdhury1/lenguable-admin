@@ -203,7 +203,7 @@ import {
   GraduationCap,
   BookOpen,
   TrendingUp,
-  AlertCircle,
+  // AlertCircle,
 } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
@@ -317,7 +317,7 @@ export default function Dashboard() {
       </div>
 
       {/* Unpaid Teacher Earnings Alert */}
-      {(overview?.unpaidTeacherEarnings ?? 0) > 0 && (
+      {/* {(overview?.unpaidTeacherEarnings ?? 0) > 0 && (
         <Card className="border border-yellow-200 bg-yellow-50 mb-4">
           <CardContent className="p-4 flex items-center gap-3">
             <AlertCircle className="text-yellow-600 w-5 h-5 shrink-0" />
@@ -329,7 +329,7 @@ export default function Dashboard() {
             </p>
           </CardContent>
         </Card>
-      )}
+      )} */}
 
       {/* Weekly Financials Table */}
       <Card className="border border-gray-200 mb-4">
@@ -377,7 +377,7 @@ export default function Dashboard() {
       </Card>
 
       {/* Bottom Highlight Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <Card className="bg-green-50 border border-green-200">
           <CardContent className="p-6 flex items-center justify-between">
             <div>
@@ -392,7 +392,7 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card className="bg-yellow-50 border border-yellow-200">
+        {/* <Card className="bg-yellow-50 border border-yellow-200">
           <CardContent className="p-6 flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-yellow-600 mb-1">
@@ -404,7 +404,7 @@ export default function Dashboard() {
             </div>
             <AlertCircle className="text-yellow-600 w-8 h-8" />
           </CardContent>
-        </Card>
+        </Card> */}
 
         <Card className="bg-blue-50 border border-blue-200">
           <CardContent className="p-6 flex items-center justify-between">
