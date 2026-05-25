@@ -47,7 +47,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-// ─── Sortable Lesson Row ─────────────────────────────────────────────────────
+// Sortable Lesson Row
 
 function SortableLessonRow({
   lesson,
@@ -121,8 +121,7 @@ function SortableLessonRow({
   );
 }
 
-// ─── Main Page ───────────────────────────────────────────────────────────────
-
+// Main Page
 export default function CoursePage() {
   const [lessonOpen, setLessonOpen] = useState(false);
   const [resourceOpen, setResourceOpen] = useState(false);
