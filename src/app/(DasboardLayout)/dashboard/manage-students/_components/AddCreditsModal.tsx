@@ -13,6 +13,7 @@ import { Student } from "@/types";
 import { useForm } from "react-hook-form";
 import { useAddCreditsMutation } from "@/redux/features/studentApi";
 import { toast } from "sonner";
+import { PlusCircle } from "lucide-react";
 
 type AddCreditsFormData = {
   credits: number;
@@ -31,9 +32,15 @@ export function AddCreditsModal({
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors },
   } = useForm<AddCreditsFormData>();
+
   const [addCredits, { isLoading }] = useAddCreditsMutation();
+
+  const watchedCredits = Number(watch("credits") ?? 0);
+  const currentCredits = student?.credits ?? 0;
+  const afterAdd = watchedCredits > 0 ? currentCredits + watchedCredits : currentCredits;
 
   async function onSubmit(data: AddCreditsFormData) {
     try {
@@ -43,9 +50,7 @@ export function AddCreditsModal({
       }).unwrap();
 
       toast.success(
-        `${data.credits} credits added to ${student?.name}. New total: ${
-          (student?.credits ?? 0) + Number(data.credits)
-        }`,
+        `${data.credits} credits added to ${student?.name}. New total: ${afterAdd}`,
       );
       reset();
       onClose();
@@ -54,60 +59,93 @@ export function AddCreditsModal({
     }
   }
 
+  function handleClose() {
+    reset();
+    onClose();
+  }
+
   if (!student) return null;
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md rounded-lg">
+    <Dialog open={open} onOpenChange={handleClose}>
+      <DialogContent className="sm:max-w-md rounded-xl">
         <DialogHeader>
-          <DialogTitle className="text-base font-semibold">
-            Add Credits
-          </DialogTitle>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-green-100">
+              <PlusCircle size={16} className="text-green-600" />
+            </div>
+            <DialogTitle className="text-base font-semibold text-gray-900">
+              Add Credits
+            </DialogTitle>
+          </div>
         </DialogHeader>
 
-        <p className="text-sm text-gray-500 -mt-2 mb-2">
+        <p className="text-sm text-gray-500 -mt-1 mb-1">
           Add class credits to:{" "}
-          <span className="font-medium text-gray-900">{student.name}</span>
+          <span className="font-semibold text-gray-900">{student.name}</span>
         </p>
 
-        {/* Current credits */}
-        <div className="bg-gray-50 rounded-md px-4 py-2 text-sm text-gray-600">
-          Current credits:{" "}
-          <span className="font-semibold text-gray-900">
-            {student.credits ?? 0}
-          </span>
+        {/* Credit summary */}
+        <div className="grid grid-cols-2 gap-3 my-1">
+          <div className="bg-gray-50 border border-gray-100 rounded-lg px-4 py-3 text-center">
+            <p className="text-xs text-gray-500 mb-0.5">Current Credits</p>
+            <p className="text-2xl font-bold text-gray-900">{currentCredits}</p>
+          </div>
+          <div
+            className={`rounded-lg px-4 py-3 text-center border transition-colors ${
+              watchedCredits > 0
+                ? "bg-green-50 border-green-200"
+                : "bg-gray-50 border-gray-100"
+            }`}
+          >
+            <p className="text-xs text-gray-500 mb-0.5">After Addition</p>
+            <p
+              className={`text-2xl font-bold transition-colors ${
+                watchedCredits > 0 ? "text-green-600" : "text-gray-900"
+              }`}
+            >
+              {afterAdd}
+            </p>
+          </div>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-1">
           <div>
-            <Label className="mb-1 block text-sm font-medium">
-              Number of Credits to Add
+            <Label className="mb-1.5 block text-sm font-medium text-gray-700">
+              Credits to Add
             </Label>
             <Input
               type="number"
               placeholder="Enter number of credits"
               min={1}
+              className="focus-visible:ring-green-400"
               {...register("credits", {
                 required: "Credits are required",
                 min: { value: 1, message: "Must be at least 1 credit" },
               })}
             />
             {errors.credits && (
-              <p className="text-red-500 text-sm mt-1">
+              <p className="text-red-500 text-xs mt-1.5">
                 {errors.credits.message}
               </p>
             )}
           </div>
 
-          <DialogFooter className="pt-1">
-            <Button type="button" variant="outline" onClick={onClose}>
+          <DialogFooter className="pt-1 gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleClose}
+              disabled={isLoading}
+            >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={isLoading}
-              className="bg-[#A9F877] hover:bg-[#C1FF72] text-black"
+              className="bg-[#A9F877] hover:bg-[#C1FF72] text-black gap-1.5"
             >
+              <PlusCircle size={14} />
               {isLoading ? "Adding..." : "Add Credits"}
             </Button>
           </DialogFooter>

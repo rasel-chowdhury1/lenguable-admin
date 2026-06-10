@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { AlertTriangle, Eye, Plus, Trash2 } from "lucide-react";
+import { AlertTriangle, Eye, Minus, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -26,6 +26,7 @@ import {
 import { Student } from "@/types";
 import { DetailModal } from "./_components/DetailModal";
 import { AddCreditsModal } from "./_components/AddCreditsModal";
+import { RemoveCreditsModal } from "./_components/RemoveCreditsModal";
 import { getInitials } from "@/utils";
 import {
   useGetStudentQuery,
@@ -56,8 +57,10 @@ export default function StudentManagement() {
 
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [creditsStudent, setCreditsStudent] = useState<Student | null>(null);
+  const [removeCreditsStudent, setRemoveCreditsStudent] = useState<Student | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
   const [creditsOpen, setCreditsOpen] = useState(false);
+  const [removeCreditsOpen, setRemoveCreditsOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -109,10 +112,15 @@ export default function StudentManagement() {
     setCreditsOpen(true);
   }
 
+  function openRemoveCredits(student: Student): void {
+    setRemoveCreditsStudent(student);
+    setRemoveCreditsOpen(true);
+  }
+
   if (isLoading) return <p>Loading students...</p>;
 
   return (
-    <div className="max-w-6xl mx-auto p-5 my-10">
+    <div className="w-[90%] mx-auto p-3 my-10">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Student Management</h1>
@@ -227,6 +235,15 @@ export default function StudentManagement() {
                         <Plus size={14} /> Add Credits
                       </Button>
                       <Button
+                        size="sm"
+                        variant="outline"
+                        className="gap-1.5 border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+                        onClick={() => openRemoveCredits(s)}
+                        disabled={s.credits === 0}
+                      >
+                        <Minus size={14} /> Remove Credits
+                      </Button>
+                      <Button
                         variant="destructive"
                         size="sm"
                         onClick={() => setDeleteId(s._id)}
@@ -252,6 +269,11 @@ export default function StudentManagement() {
         student={creditsStudent}
         open={creditsOpen}
         onClose={() => setCreditsOpen(false)}
+      />
+      <RemoveCreditsModal
+        student={removeCreditsStudent}
+        open={removeCreditsOpen}
+        onClose={() => setRemoveCreditsOpen(false)}
       />
 
       {/* Delete Confirm Dialog */}
