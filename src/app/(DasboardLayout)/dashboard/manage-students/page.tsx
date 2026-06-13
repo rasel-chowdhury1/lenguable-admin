@@ -34,20 +34,26 @@ import {
 } from "@/redux/features/studentApi";
 import { toast } from "sonner";
 
-const getCurrentLevel = (unlockedCount: number) => {
-  if (unlockedCount === 1) return "A0";
-  if (unlockedCount === 2) return "A1";
-  if (unlockedCount === 3) return "A2";
-  if (unlockedCount === 4) return "B1";
-  if (unlockedCount === 5) return "B2";
-  if (unlockedCount === 6) return "C1";
-  return "A0";
+const LEVEL_ORDER = ["A0", "A1", "A2", "B1", "B2", "C1"];
+
+const getCurrentLevel = (unlockedLessons: { level?: string }[] = []) => {
+  if (!unlockedLessons.length) return "A0";
+
+  let highestIndex = 0;
+  for (const lesson of unlockedLessons) {
+    const idx = LEVEL_ORDER.indexOf(lesson.level || "A0");
+    if (idx > highestIndex) highestIndex = idx;
+  }
+  return LEVEL_ORDER[highestIndex];
 };
 
 const getCompletedClasses = (bookings: Student["booking"] = []) => {
-  const now = new Date();
+  return bookings.filter((b) => b.status === "completed").length;
+};
+
+const getTotalClasses = (bookings: Student["booking"] = []) => {
   return bookings.filter(
-    (b) => new Date(b.date) < now && b.status !== "cancelled",
+    (b) => b.status !== "cancelled" && b.status !== "cancelledByStudent",
   ).length;
 };
 
@@ -73,7 +79,8 @@ export default function StudentManagement() {
         name: s.name,
         email: s.email,
         credits: s.credits,
-        level: getCurrentLevel(s.unlockedLessons?.length || 0),
+        level: getCurrentLevel(s.unlockedLessons || []),
+        totalClasses: getTotalClasses(s.booking || []),
         classesCompleted: getCompletedClasses(s.booking || []),
         aboutMe: s.aboutMe,
         unlockedLessons: s.unlockedLessons || [],
@@ -165,7 +172,7 @@ export default function StudentManagement() {
             {students.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={6}
+                  colSpan={7}
                   className="text-center py-10 text-gray-500"
                 >
                   <div className="flex flex-col items-center gap-2">
@@ -214,7 +221,7 @@ export default function StudentManagement() {
                   </TableCell>
 
                   <TableCell className="text-sm text-gray-800 py-4">
-                    {s.classesCompleted}
+                    {s.totalClasses}
                   </TableCell>
 
                   <TableCell className="py-4">

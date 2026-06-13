@@ -64,6 +64,7 @@ export type Student = {
   email: string;
   credits: number;
   level: string;
+  totalClasses: number;
   classesCompleted: number;
   aboutMe?: string;
   unlockedLessons?: Lesson[];
