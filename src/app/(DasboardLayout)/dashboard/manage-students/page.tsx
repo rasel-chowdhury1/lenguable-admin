@@ -63,12 +63,40 @@ export default function StudentManagement() {
 
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [creditsStudent, setCreditsStudent] = useState<Student | null>(null);
-  const [removeCreditsStudent, setRemoveCreditsStudent] = useState<Student | null>(null);
+  const [removeCreditsStudent, setRemoveCreditsStudent] =
+    useState<Student | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
   const [creditsOpen, setCreditsOpen] = useState(false);
   const [removeCreditsOpen, setRemoveCreditsOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+
+  // const students: Student[] = useMemo(() => {
+  //   if (!data?.data) return [];
+
+  //   return data.data
+  //     .map((s: any) => ({
+  //       _id: s._id,
+  //       name: s.name,
+  //       email: s.email,
+  //       credits: s.credits,
+  //       level: getCurrentLevel(s.unlockedLessons || []),
+  //       totalClasses: getTotalClasses(s.booking || []),
+  //       classesCompleted: getCompletedClasses(s.booking || []),
+  //       aboutMe: s.aboutMe,
+  //       unlockedLessons: s.unlockedLessons || [],
+  //       booking: s.booking || [],
+  //       packages: s.packages || [],
+  //       interests: s.interests || [],
+  //     }))
+  //     .filter((s: Student) => {
+  //       const keyword = searchTerm.toLowerCase();
+  //       return (
+  //         s.name?.toLowerCase().includes(keyword) ||
+  //         s.email?.toLowerCase().includes(keyword)
+  //       );
+  //     });
+  // }, [data, searchTerm]);
 
   const students: Student[] = useMemo(() => {
     if (!data?.data) return [];
@@ -81,7 +109,7 @@ export default function StudentManagement() {
         credits: s.credits,
         level: getCurrentLevel(s.unlockedLessons || []),
         totalClasses: getTotalClasses(s.booking || []),
-        classesCompleted: getCompletedClasses(s.booking || []),
+        classesCompleted: s.totalCompletedClasses ?? 0,
         aboutMe: s.aboutMe,
         unlockedLessons: s.unlockedLessons || [],
         booking: s.booking || [],
@@ -221,7 +249,7 @@ export default function StudentManagement() {
                   </TableCell>
 
                   <TableCell className="text-sm text-gray-800 py-4">
-                    {s.totalClasses}
+                    {s.classesCompleted}
                   </TableCell>
 
                   <TableCell className="py-4">

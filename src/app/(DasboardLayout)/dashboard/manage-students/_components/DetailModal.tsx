@@ -51,7 +51,7 @@ export function DetailModal({
         <div className="border border-gray-200 rounded-lg p-4 mb-2">
           <p className="text-xs text-gray-400 mb-1">Classes Completed</p>
           <p className="text-2xl font-bold text-gray-900">
-            {student.totalClasses}
+            {student.classesCompleted}
           </p>
         </div>
 
