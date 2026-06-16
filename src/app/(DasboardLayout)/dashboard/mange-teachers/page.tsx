@@ -118,7 +118,7 @@ export default function TeacherManagement() {
                 </TableCell>
               </TableRow>
             ) : (
-              teachers.map((t) => (
+              teachers.map((t: any) => (
                 <TableRow
                   key={t._id}
                   className="border-b border-gray-100 last:border-0 hover:bg-gray-50/50"
@@ -142,7 +142,7 @@ export default function TeacherManagement() {
                     {t.totalClasses}
                   </TableCell>
                   <TableCell className="text-sm font-bold text-gray-900 py-4">
-                    ${t.totalEarnings}
+                    ${t.totalPaidOut}
                   </TableCell>
 
                   <TableCell className="py-4">
