@@ -164,7 +164,7 @@ export function DetailModal({
                 >
                   <div className="flex items-center justify-between gap-2 mb-1">
                     <p className="text-sm font-medium text-gray-800 truncate">
-                      {b.teacherId.name}
+                      {b.teacherId ? b.teacherId.name : "Teacher unavailable"}
                     </p>
                     <Badge
                       className={`capitalize text-xs font-medium border-0 shrink-0 ${BOOKING_COLORS[b.status] ?? "bg-gray-100 text-gray-600"}`}
@@ -172,7 +172,9 @@ export function DetailModal({
                       {b.status}
                     </Badge>
                   </div>
-                  <p className="text-xs text-gray-500">{b.teacherId.email}</p>
+                  {b.teacherId && (
+                    <p className="text-xs text-gray-500">{b.teacherId.email}</p>
+                  )}
                   <p className="text-xs text-gray-400 mt-1">
                     {formatDate(b.startTime)} — {formatDate(b.endTime)}
                   </p>

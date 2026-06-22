@@ -36,6 +36,10 @@ function formatDate(iso: string) {
   });
 }
 
+function fmt(n: number | null | undefined) {
+  return (n ?? 0).toFixed(2);
+}
+
 export default function PaymentListPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -59,10 +63,10 @@ export default function PaymentListPage() {
 
   const totalRevenue = useMemo(
     () =>
-      payments
+      ((data?.data as Payment[]) ?? [])
         .filter((p) => p.status === "completed")
-        .reduce((sum, p) => sum + p.amount, 0),
-    [payments],
+        .reduce((sum, p) => sum + (p.amount ?? 0), 0),
+    [data],
   );
 
   if (isLoading)
@@ -90,7 +94,7 @@ export default function PaymentListPage() {
           <p className="text-sm text-muted-foreground mt-1">
             {payments.length} payment{payments.length !== 1 ? "s" : ""} ·{" "}
             <span className="font-semibold text-gray-800">
-              ${totalRevenue.toFixed(2)} revenue
+              ${fmt(totalRevenue)} revenue
             </span>
           </p>
         </div>
@@ -170,14 +174,14 @@ export default function PaymentListPage() {
 
                   {/* Original price */}
                   <TableCell className="text-sm text-muted-foreground">
-                    ${p.originalPrice.toFixed(2)}
+                    ${fmt(p.originalPrice)}
                   </TableCell>
 
                   {/* Discount */}
                   <TableCell className="text-sm">
-                    {p.discountAmount > 0 ? (
+                    {(p.discountAmount ?? 0) > 0 ? (
                       <span className="text-orange-500 font-medium">
-                        −${p.discountAmount.toFixed(2)}
+                        −${fmt(p.discountAmount)}
                       </span>
                     ) : (
                       <span className="text-muted-foreground">—</span>
@@ -186,7 +190,7 @@ export default function PaymentListPage() {
 
                   {/* Final amount */}
                   <TableCell className="text-sm font-bold text-gray-900">
-                    ${p.amount.toFixed(2)}{" "}
+                    ${fmt(p.amount)}{" "}
                     <span className="text-xs font-normal text-muted-foreground uppercase">
                       {p.currency}
                     </span>

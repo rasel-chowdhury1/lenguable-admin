@@ -41,6 +41,8 @@ function Row({ label, value }: { label: string; value: React.ReactNode }) {
 export default function BookingDetailModal({ booking, onClose }: Props) {
   if (!booking) return null;
 
+  const teacher = booking.teacherId;
+
   return (
     <Dialog open={!!booking} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-lg">
@@ -75,13 +77,17 @@ export default function BookingDetailModal({ booking, onClose }: Props) {
           <Row
             label="Teacher"
             value={
-              <span>
-                {booking.teacherId.name}
-                <br />
-                <span className="text-xs text-muted-foreground font-normal">
-                  {booking.teacherId.email}
+              teacher ? (
+                <span>
+                  {teacher.name}
+                  <br />
+                  <span className="text-xs text-muted-foreground font-normal">
+                    {teacher.email}
+                  </span>
                 </span>
-              </span>
+              ) : (
+                <span className="text-muted-foreground">—</span>
+              )
             }
           />
 

@@ -66,8 +66,8 @@ export default function ManageBookingsPage() {
     const matchesSearch =
       b.studentId.name.toLowerCase().includes(search.toLowerCase()) ||
       b.studentId.email.toLowerCase().includes(search.toLowerCase()) ||
-      b.teacherId.name.toLowerCase().includes(search.toLowerCase()) ||
-      b.teacherId.email.toLowerCase().includes(search.toLowerCase());
+      (b.teacherId?.name ?? "").toLowerCase().includes(search.toLowerCase()) ||
+      (b.teacherId?.email ?? "").toLowerCase().includes(search.toLowerCase());
     const matchesStatus =
       statusFilter === "all" || b.status === statusFilter;
     return matchesSearch && matchesStatus;
@@ -183,11 +183,13 @@ export default function ManageBookingsPage() {
                   {/* Teacher */}
                   <TableCell>
                     <p className="font-medium text-sm">
-                      {booking.teacherId.name}
+                      {booking.teacherId ? booking.teacherId.name : "—"}
                     </p>
-                    <p className="text-xs text-muted-foreground">
-                      {booking.teacherId.email}
-                    </p>
+                    {booking.teacherId && (
+                      <p className="text-xs text-muted-foreground">
+                        {booking.teacherId.email}
+                      </p>
+                    )}
                   </TableCell>
 
                   {/* Times */}

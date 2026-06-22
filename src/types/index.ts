@@ -122,7 +122,7 @@ export type StudentPayment = {
 
 export type StudentBooking = {
   _id: string;
-  teacherId: { _id: string; name: string; email: string };
+  teacherId: { _id: string; name: string; email: string } | null;
   startTime: string;
   endTime: string;
   meetLink: string;
@@ -183,7 +183,7 @@ export type Payment = {
 export type Booking = {
   _id: string;
   studentId: { _id: string; name: string; email: string };
-  teacherId: { _id: string; name: string; email: string };
+  teacherId: { _id: string; name: string; email: string } | null;
   startTime: string;
   endTime: string;
   meetLink: string;
