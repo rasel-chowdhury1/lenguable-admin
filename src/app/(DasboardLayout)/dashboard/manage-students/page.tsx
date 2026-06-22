@@ -28,6 +28,7 @@ import { DetailModal } from "./_components/DetailModal";
 import { AddCreditsModal } from "./_components/AddCreditsModal";
 import { RemoveCreditsModal } from "./_components/RemoveCreditsModal";
 import { getInitials } from "@/utils";
+import { Spinner } from "@/components/ui/spinner";
 import {
   useGetStudentQuery,
   useDeleteStudentMutation,
@@ -36,26 +37,15 @@ import { toast } from "sonner";
 
 const LEVEL_ORDER = ["A0", "A1", "A2", "B1", "B2", "C1"];
 
-const getCurrentLevel = (unlockedLessons: { level?: string }[] = []) => {
+function getCurrentLevel(unlockedLessons: { level?: string }[] = []) {
   if (!unlockedLessons.length) return "A0";
-
   let highestIndex = 0;
   for (const lesson of unlockedLessons) {
     const idx = LEVEL_ORDER.indexOf(lesson.level || "A0");
     if (idx > highestIndex) highestIndex = idx;
   }
   return LEVEL_ORDER[highestIndex];
-};
-
-const getCompletedClasses = (bookings: Student["booking"] = []) => {
-  return bookings.filter((b) => b.status === "completed").length;
-};
-
-const getTotalClasses = (bookings: Student["booking"] = []) => {
-  return bookings.filter(
-    (b) => b.status !== "cancelled" && b.status !== "cancelledByStudent",
-  ).length;
-};
+}
 
 export default function StudentManagement() {
   const { data, isLoading } = useGetStudentQuery(undefined);
@@ -71,58 +61,14 @@ export default function StudentManagement() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // const students: Student[] = useMemo(() => {
-  //   if (!data?.data) return [];
-
-  //   return data.data
-  //     .map((s: any) => ({
-  //       _id: s._id,
-  //       name: s.name,
-  //       email: s.email,
-  //       credits: s.credits,
-  //       level: getCurrentLevel(s.unlockedLessons || []),
-  //       totalClasses: getTotalClasses(s.booking || []),
-  //       classesCompleted: getCompletedClasses(s.booking || []),
-  //       aboutMe: s.aboutMe,
-  //       unlockedLessons: s.unlockedLessons || [],
-  //       booking: s.booking || [],
-  //       packages: s.packages || [],
-  //       interests: s.interests || [],
-  //     }))
-  //     .filter((s: Student) => {
-  //       const keyword = searchTerm.toLowerCase();
-  //       return (
-  //         s.name?.toLowerCase().includes(keyword) ||
-  //         s.email?.toLowerCase().includes(keyword)
-  //       );
-  //     });
-  // }, [data, searchTerm]);
-
   const students: Student[] = useMemo(() => {
     if (!data?.data) return [];
-
-    return data.data
-      .map((s: any) => ({
-        _id: s._id,
-        name: s.name,
-        email: s.email,
-        credits: s.credits,
-        level: getCurrentLevel(s.unlockedLessons || []),
-        totalClasses: getTotalClasses(s.booking || []),
-        classesCompleted: s.totalCompletedClasses ?? 0,
-        aboutMe: s.aboutMe,
-        unlockedLessons: s.unlockedLessons || [],
-        booking: s.booking || [],
-        packages: s.packages || [],
-        interests: s.interests || [],
-      }))
-      .filter((s: Student) => {
-        const keyword = searchTerm.toLowerCase();
-        return (
-          s.name?.toLowerCase().includes(keyword) ||
-          s.email?.toLowerCase().includes(keyword)
-        );
-      });
+    const keyword = searchTerm.toLowerCase();
+    return (data.data as Student[]).filter(
+      (s) =>
+        s.name?.toLowerCase().includes(keyword) ||
+        s.email?.toLowerCase().includes(keyword),
+    );
   }, [data, searchTerm]);
 
   const handleConfirmDelete = async () => {
@@ -152,7 +98,12 @@ export default function StudentManagement() {
     setRemoveCreditsOpen(true);
   }
 
-  if (isLoading) return <p>Loading students...</p>;
+  if (isLoading)
+    return (
+      <div className="flex items-center justify-center w-full h-64">
+        <Spinner className="size-8 text-primary" />
+      </div>
+    );
 
   return (
     <div className="w-[90%] mx-auto p-3 my-10">
@@ -244,12 +195,12 @@ export default function StudentManagement() {
 
                   <TableCell className="py-4">
                     <Badge className="rounded-full border-0 font-semibold px-2.5 text-xs bg-[#A9F877] text-black">
-                      {s.level}
+                      {getCurrentLevel(s.unlockedLessons)}
                     </Badge>
                   </TableCell>
 
                   <TableCell className="text-sm text-gray-800 py-4">
-                    {s.classesCompleted}
+                    {s.totalCompletedClasses}
                   </TableCell>
 
                   <TableCell className="py-4">

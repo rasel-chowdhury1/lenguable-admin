@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
+import { useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -44,6 +46,7 @@ interface AddTeacherModalProps {
 
 const AddTeacherModal = ({ open, onClose }: AddTeacherModalProps) => {
   const [createTeacher, { isLoading }] = useCreateTeacherMutation();
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -101,11 +104,22 @@ const AddTeacherModal = ({ open, onClose }: AddTeacherModalProps) => {
           {/* Password */}
           <div>
             <Label className="mb-1 block">Password</Label>
-            <Input
-              type="password"
-              {...register("password")}
-              placeholder="Password"
-            />
+            <div className="relative">
+              <Input
+                type={showPassword ? "text" : "password"}
+                {...register("password")}
+                placeholder="Password"
+                className="pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                tabIndex={-1}
+              >
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
             {errors.password && (
               <p className="text-sm text-red-500 mt-1">
                 {errors.password.message}

@@ -8,6 +8,7 @@ import { Lesson, Resource } from "@/types";
 import AddLessonModal from "./_components/AddLessonModal";
 import AddResourceModal from "./_components/AddResourceModal";
 import { toast } from "sonner";
+import { Spinner } from "@/components/ui/spinner";
 
 import {
   DndContext,
@@ -201,7 +202,11 @@ export default function CoursePage() {
   };
 
   if (isLoading)
-    return <p className="p-4 text-sm text-muted-foreground">Loading...</p>;
+    return (
+      <div className="flex items-center justify-center w-full h-64">
+        <Spinner className="size-8 text-primary" />
+      </div>
+    );
   if (isError)
     return <p className="p-4 text-sm text-destructive">Something went wrong</p>;
 

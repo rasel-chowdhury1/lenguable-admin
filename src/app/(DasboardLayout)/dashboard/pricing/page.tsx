@@ -13,12 +13,13 @@ import {
   useDeletePackageMutation,
 } from "@/redux/features/packageApi";
 import { toast } from "sonner";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function ManagePricingPage() {
   const [addOpen, setAddOpen] = useState(false);
   const [editPkg, setEditPkg] = useState<PricingPackage | null>(null);
 
-  const { data, refetch } = useGetAllPackagesQuery(undefined);
+  const { data, isLoading, refetch } = useGetAllPackagesQuery(undefined);
   const [createPackage] = useCreatePackageMutation();
   const [updatePackage] = useUpdatePackageMutation();
   const [deletePackage] = useDeletePackageMutation();
@@ -57,6 +58,13 @@ export default function ManagePricingPage() {
     setEditPkg(pkg);
     setAddOpen(true);
   };
+
+  if (isLoading)
+    return (
+      <div className="flex items-center justify-center w-full h-64">
+        <Spinner className="size-8 text-primary" />
+      </div>
+    );
 
   return (
     <div className="max-w-6xl mx-auto p-5 my-10">

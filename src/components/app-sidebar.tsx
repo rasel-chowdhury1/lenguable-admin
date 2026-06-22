@@ -1,16 +1,15 @@
 "use client";
 
 import {
-  // LayoutDashboard,
   Settings,
   GraduationCap,
   Users,
-  // CalendarClock,
   BookOpen,
-  // List,
   DollarSign,
   Package,
   LayoutDashboard,
+  CalendarClock,
+  CreditCard,
 } from "lucide-react";
 
 import { NavItems } from "@/components/nav-items";
@@ -43,6 +42,21 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
       icon: Users,
     },
     {
+      title: "Manage Students",
+      url: "/dashboard/manage-students",
+      icon: GraduationCap,
+    },
+    {
+      title: "Manage Bookings",
+      url: "/dashboard/booking/admin",
+      icon: CalendarClock,
+    },
+    {
+      title: "Payment List",
+      url: "/dashboard/payment",
+      icon: CreditCard,
+    },
+    {
       title: "Landing Page",
       url: "/dashboard/landing-page",
       icon: LayoutDashboard,
@@ -57,11 +71,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
     //   url: "/dashboard/teacher-schedules",
     //   icon: CalendarClock,
     // },
-    {
-      title: "Manage Students",
-      url: "/dashboard/manage-students",
-      icon: GraduationCap,
-    },
+
     {
       title: "Pricing Packages",
       url: "/dashboard/pricing",
@@ -72,6 +82,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
       url: "/dashboard/content-lessons",
       icon: BookOpen,
     },
+
     {
       title: "Settings",
       url: "/dashboard/settings",

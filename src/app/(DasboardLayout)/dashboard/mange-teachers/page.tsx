@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Plus, Eye, AlertTriangle, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -37,16 +37,26 @@ import {
   useDeleteTeacherMutation,
 } from "@/redux/features/teacherApi";
 import { toast } from "sonner";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function TeacherManagement() {
   const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(null);
   const [addOpen, setAddOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const { data, isLoading, isError } = useGetTeacherQuery(undefined);
   const [deleteTeacher, { isLoading: isDeleting }] = useDeleteTeacherMutation();
 
-  const teachers: Teacher[] = data?.data || [];
+  const teachers: Teacher[] = useMemo(() => {
+    if (!data?.data) return [];
+    const keyword = searchTerm.toLowerCase();
+    return (data.data as Teacher[]).filter(
+      (t) =>
+        t.name.toLowerCase().includes(keyword) ||
+        t.email.toLowerCase().includes(keyword),
+    );
+  }, [data, searchTerm]);
 
   const handleConfirmDelete = async () => {
     if (!deleteId) return;
@@ -60,8 +70,13 @@ export default function TeacherManagement() {
     }
   };
 
-  if (isLoading)
-    return <p className="text-center mt-10">Loading teachers...</p>;
+    if (isLoading)
+    return (
+      <div className="flex items-center justify-center w-full h-64">
+        <Spinner className="size-8 text-primary" />
+      </div>
+    );
+    
   if (isError)
     return (
       <p className="text-center mt-10 text-red-500">Failed to load teachers</p>
@@ -72,12 +87,21 @@ export default function TeacherManagement() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Teacher Management</h1>
-        <Button
-          onClick={() => setAddOpen(true)}
-          className="bg-[#A9F877] hover:bg-[#C1FF72] text-black"
-        >
-          <Plus size={15} /> Add Teacher
-        </Button>
+        <div className="flex items-center gap-3">
+          <input
+            type="text"
+            placeholder="Search teachers by name or email..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-80 border px-3 py-2 rounded-md text-sm"
+          />
+          <Button
+            onClick={() => setAddOpen(true)}
+            className="bg-[#A9F877] hover:bg-[#C1FF72] text-black"
+          >
+            <Plus size={15} /> Add Teacher
+          </Button>
+        </div>
       </div>
 
       {/* Table */}
@@ -90,13 +114,13 @@ export default function TeacherManagement() {
               </TableHead>
               <TableHead className="text-gray-500 text-sm">Email</TableHead>
               <TableHead className="text-gray-500 text-sm">
-                Hours This Week
-              </TableHead>
-              <TableHead className="text-gray-500 text-sm">
-                Total Hours
+                Total Classes
               </TableHead>
               <TableHead className="text-gray-500 text-sm">
                 Total Paid
+              </TableHead>
+              <TableHead className="text-gray-500 text-sm">
+                Pending Amount
               </TableHead>
               <TableHead className="text-gray-500 text-sm">Status</TableHead>
               <TableHead className="text-gray-500 text-sm">Actions</TableHead>
@@ -107,7 +131,7 @@ export default function TeacherManagement() {
             {teachers.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={7}
+                  colSpan={8}
                   className="text-center py-10 text-gray-500"
                 >
                   <div className="flex flex-col items-center gap-2">
@@ -138,11 +162,11 @@ export default function TeacherManagement() {
                   <TableCell className="text-sm text-gray-800 py-4">
                     {t.totalClasses}
                   </TableCell>
-                  <TableCell className="text-sm text-gray-800 py-4">
-                    {t.totalClasses}
-                  </TableCell>
                   <TableCell className="text-sm font-bold text-gray-900 py-4">
                     ${t.totalPaidOut}
+                  </TableCell>
+                  <TableCell className="text-sm font-bold text-orange-500 py-4">
+                    ${t.unpaidEarnings}
                   </TableCell>
 
                   <TableCell className="py-4">

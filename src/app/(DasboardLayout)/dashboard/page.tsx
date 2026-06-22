@@ -26,6 +26,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Period, useGetDashboardStatsQuery } from "@/redux/features/statsApi";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function Dashboard() {
   const [period, setPeriod] = useState<Period>("weekly");
@@ -70,13 +71,14 @@ export default function Dashboard() {
     },
   ];
 
-  if (isLoading) {
+
+    if (isLoading)
     return (
-      <div className="max-w-6xl mx-auto p-5 my-10">
-        <p className="text-lg">Loading...</p>
+      <div className="flex items-center justify-center w-full h-64">
+        <Spinner className="size-8 text-primary" />
       </div>
     );
-  }
+
   if (isError) {
     return (
       <div className="max-w-6xl mx-auto p-5 my-10">

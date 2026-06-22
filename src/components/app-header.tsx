@@ -3,7 +3,7 @@
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "./ui/sidebar";
 import { Button } from "./ui/button";
-import { LogOut, LogIn } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { useGetMeQuery } from "@/redux/features/userApi";
 import { useLogoutMutation } from "@/redux/features/authApi";
 import { useRouter } from "next/navigation";
@@ -44,26 +44,25 @@ const AppHeader = () => {
           {/* LANGUAGE TRANSLATE */}
           <GoogleTranslate />
 
-          {/* LOGIN / LOGOUT BUTTON */}
-          {user ? (
-            <Button
-              onClick={handleLogout}
-              size="sm"
-              className="gap-2 bg-sidebar text-black hover:bg-sidebar hover:cursor-pointer"
-            >
-              <LogOut className="h-4 w-4" />
-              Logout
-            </Button>
-          ) : (
-            <Button
-              onClick={() => router.push("/")}
-              size="sm"
-              className="gap-2 bg-sidebar text-black hover:bg-sidebar hover:cursor-pointer"
-            >
-              <LogIn className="h-4 w-4" />
-              Login
-            </Button>
+          {/* USER INFO */}
+          {user && (
+            <div className="text-right hidden sm:block">
+              <p className="text-sm font-semibold text-gray-900 leading-tight">
+                {user.name}
+              </p>
+              <p className="text-xs text-muted-foreground">{user.email}</p>
+            </div>
           )}
+
+          {/* LOGOUT BUTTON — always visible inside the protected dashboard */}
+          <Button
+            onClick={handleLogout}
+            size="sm"
+            className="gap-2 bg-sidebar text-black hover:bg-sidebar hover:cursor-pointer"
+          >
+            <LogOut className="h-4 w-4" />
+            Logout
+          </Button>
         </div>
       </div>
     </div>

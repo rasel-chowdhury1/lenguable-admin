@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
+import { useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { Eye, EyeOff } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -33,10 +35,12 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 const LoginPage = () => {
   const router = useRouter();
   const [login, { isLoading }] = useLoginMutation();
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -49,10 +53,17 @@ const LoginPage = () => {
   const onSubmit = async (data: LoginFormValues) => {
     try {
       const res = await login(data).unwrap();
-      toast.success(res.message || "Admin login successfully!");
+
+      if (res?.data?.user?.role && res.data.user.role !== "ADMIN") {
+        toast.error("Access denied. You do not have permission to access the admin panel.");
+        reset();
+        return;
+      }
+      toast.success("Welcome back! You have successfully logged in.");
       router.push("/dashboard");
     } catch (err: any) {
-      toast.error(err?.data?.message || "Invalid email or password");
+      toast.error(err?.data?.message || "Login failed. Please check your credentials and try again.");
+      reset();
     }
   };
 
@@ -85,11 +96,22 @@ const LoginPage = () => {
             {/* Password */}
             <div>
               <Label className="mb-1 block">Password</Label>
-              <Input
-                {...register("password")}
-                type="password"
-                placeholder="Enter Password"
-              />
+              <div className="relative">
+                <Input
+                  {...register("password")}
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter Password"
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  tabIndex={-1}
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
               {errors.password && (
                 <p className="text-sm text-red-500 mt-1">
                   {errors.password.message}
