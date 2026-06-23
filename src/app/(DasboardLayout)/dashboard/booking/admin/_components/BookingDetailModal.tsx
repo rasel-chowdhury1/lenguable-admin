@@ -42,6 +42,7 @@ export default function BookingDetailModal({ booking, onClose }: Props) {
   if (!booking) return null;
 
   const teacher = booking.teacherId;
+  const student = booking.studentId;
 
   return (
     <Dialog open={!!booking} onOpenChange={onClose}>
@@ -65,13 +66,17 @@ export default function BookingDetailModal({ booking, onClose }: Props) {
           <Row
             label="Student"
             value={
-              <span>
-                {booking.studentId.name}
-                <br />
-                <span className="text-xs text-muted-foreground font-normal">
-                  {booking.studentId.email}
+              student ? (
+                <span>
+                  {student.name}
+                  <br />
+                  <span className="text-xs text-muted-foreground font-normal">
+                    {student.email}
+                  </span>
                 </span>
-              </span>
+              ) : (
+                <span className="text-muted-foreground">—</span>
+              )
             }
           />
           <Row

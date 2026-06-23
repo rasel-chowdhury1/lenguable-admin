@@ -182,7 +182,7 @@ export type Payment = {
 
 export type Booking = {
   _id: string;
-  studentId: { _id: string; name: string; email: string };
+  studentId: { _id: string; name: string; email: string } | null;
   teacherId: { _id: string; name: string; email: string } | null;
   startTime: string;
   endTime: string;

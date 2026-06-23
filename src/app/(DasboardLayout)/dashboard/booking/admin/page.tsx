@@ -64,8 +64,8 @@ export default function ManageBookingsPage() {
 
   const filtered = bookings.filter((b) => {
     const matchesSearch =
-      b.studentId.name.toLowerCase().includes(search.toLowerCase()) ||
-      b.studentId.email.toLowerCase().includes(search.toLowerCase()) ||
+      (b.studentId?.name ?? "").toLowerCase().includes(search.toLowerCase()) ||
+      (b.studentId?.email ?? "").toLowerCase().includes(search.toLowerCase()) ||
       (b.teacherId?.name ?? "").toLowerCase().includes(search.toLowerCase()) ||
       (b.teacherId?.email ?? "").toLowerCase().includes(search.toLowerCase());
     const matchesStatus =
@@ -173,11 +173,13 @@ export default function ManageBookingsPage() {
                   {/* Student */}
                   <TableCell>
                     <p className="font-medium text-sm">
-                      {booking.studentId.name}
+                      {booking.studentId ? booking.studentId.name : "—"}
                     </p>
-                    <p className="text-xs text-muted-foreground">
-                      {booking.studentId.email}
-                    </p>
+                    {booking.studentId && (
+                      <p className="text-xs text-muted-foreground">
+                        {booking.studentId.email}
+                      </p>
+                    )}
                   </TableCell>
 
                   {/* Teacher */}
