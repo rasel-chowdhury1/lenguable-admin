@@ -59,6 +59,15 @@ const LoginPage = () => {
         reset();
         return;
       }
+
+      // Store tokens in cookies
+      if (res?.data?.accessToken) {
+        document.cookie = `accessToken=${res.data.accessToken}; path=/; max-age=${7 * 24 * 60 * 60}`;
+      }
+      if (res?.data?.refreshToken) {
+        document.cookie = `refreshToken=${res.data.refreshToken}; path=/; max-age=${7 * 24 * 60 * 60}`;
+      }
+
       toast.success("Welcome back! You have successfully logged in.");
       router.push("/dashboard");
     } catch (err: any) {

@@ -11,7 +11,11 @@ export const discountCodeApi = baseApi.injectEndpoints({
     }),
 
     generateDiscountCode: builder.mutation({
-      query: (data: { packageId: string; discountPercent: number }) => ({
+      query: (data: {
+        code: string;
+        packageId: string;
+        discountPercent: number;
+      }) => ({
         url: "/discount-code/generate",
         method: "POST",
         body: data,

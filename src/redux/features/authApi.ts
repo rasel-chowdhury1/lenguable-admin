@@ -1,4 +1,4 @@
-import { baseApi } from "../api/baseApi";
+import { baseApi, clearTokens } from "../api/baseApi";
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
@@ -17,6 +17,16 @@ export const authApi = baseApi.injectEndpoints({
         method: "POST",
       }),
       invalidatesTags: ["Auth"],
+      async onQueryStarted(_, { queryFulfilled }) {
+        try {
+          await queryFulfilled;
+        } finally {
+          clearTokens();
+          if (typeof window !== "undefined") {
+            window.location.href = "/";
+          }
+        }
+      },
     }),
   }),
 });

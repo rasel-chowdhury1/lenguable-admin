@@ -19,6 +19,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { useLogoutMutation } from "@/redux/features/authApi"
 
 export function NavUser({
   user,
@@ -30,6 +31,15 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
+  const [logout, { isLoading }] = useLogoutMutation()
+
+  const handleLogout = async () => {
+    try {
+      await logout().unwrap()
+    } catch {
+      // Logout error is handled in authApi
+    }
+  }
 
   return (
     <SidebarMenu>
@@ -70,9 +80,9 @@ export function NavUser({
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout} disabled={isLoading}>
               <LogOut />
-              Log out
+              {isLoading ? "Logging out..." : "Log out"}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

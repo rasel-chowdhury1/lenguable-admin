@@ -42,6 +42,7 @@ export default function SettingsPage() {
   // Coupon state
   const [selectedPackageId, setSelectedPackageId] = useState<string>("");
   const [discountPercent, setDiscountPercent] = useState<string>("");
+  const [customCode, setCustomCode] = useState<string>("");
 
   const { data, refetch } = useGetAnnouncementQuery(undefined);
   const announcement = data?.data;
@@ -103,6 +104,10 @@ export default function SettingsPage() {
   }
 
   const handleGenerateCode = async () => {
+    if (!customCode.trim()) {
+      toast.error("Please enter a discount code");
+      return;
+    }
     if (!selectedPackageId) {
       toast.error("Please select a package");
       return;
@@ -117,12 +122,18 @@ export default function SettingsPage() {
     }
 
     try {
-      const res = await generateDiscountCode({
+      const payload = {
+        code: customCode.trim().toUpperCase(),
         packageId: selectedPackageId,
         discountPercent: Number(discountPercent),
-      }).unwrap();
+      };
 
-      toast.success("Discount code generated!");
+      const res = await generateDiscountCode(payload).unwrap();
+
+      toast.success("Discount code generated successfully!");
+      setSelectedPackageId("");
+      setDiscountPercent("");
+      setCustomCode("");
       refetchCodes();
     } catch (err: any) {
       toast.error(err?.data?.message || "Failed to generate code");
@@ -164,11 +175,29 @@ export default function SettingsPage() {
         </p>
 
         {/* Generate Code Form */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+          {/* Custom Code (Required) */}
+          <div className="space-y-1.5">
+            <Label className="text-sm font-semibold text-gray-800">
+              Discount Code <span className="text-red-500">*</span>
+            </Label>
+            <Input
+              type="text"
+              placeholder="e.g. SAVE50"
+              value={customCode}
+              onChange={(e) => setCustomCode(e.target.value)}
+              className="bg-gray-50 border-gray-200"
+              maxLength={50}
+            />
+            <p className="text-xs text-gray-500">
+              {customCode.length}/50
+            </p>
+          </div>
+
           {/* Package Select */}
           <div className="space-y-1.5">
             <Label className="text-sm font-semibold text-gray-800">
-              Package
+              Package <span className="text-red-500">*</span>
             </Label>
             <Select
               value={selectedPackageId}
@@ -190,7 +219,7 @@ export default function SettingsPage() {
           {/* Discount % */}
           <div className="space-y-1.5">
             <Label className="text-sm font-semibold text-gray-800">
-              Discount %
+              Discount % <span className="text-red-500">*</span>
             </Label>
             <Input
               type="number"
@@ -214,7 +243,7 @@ export default function SettingsPage() {
               disabled={isGenerating}
               className="w-full bg-[#A9F877] hover:bg-[#C1FF72] text-black"
             >
-              {isGenerating ? "Generating..." : "Generate Code"}
+              {isGenerating ? "Generating..." : "Generate"}
             </Button>
           </div>
         </div>
