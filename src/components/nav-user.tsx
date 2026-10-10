@@ -35,7 +35,7 @@ export function NavUser({
 
   const handleLogout = async () => {
     try {
-      await logout().unwrap()
+      await logout(undefined).unwrap()
     } catch {
       // Logout error is handled in authApi
     }
